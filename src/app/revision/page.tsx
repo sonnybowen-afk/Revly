@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { Callout, LinkCard, PageHeader } from "@/components/ui/page";
+import { Callout, PageHeader } from "@/components/ui/page";
+import { ResourceBrowser } from "@/components/resources/resource-browser";
 import { DECKS, totalCards } from "@/lib/decks";
 
 export const metadata: Metadata = {
@@ -39,45 +40,6 @@ const TOOLS = [
     title: "Tutoring",
     body: "For the topics that refuse to shift no matter how many cards you do.",
     cta: "See tutoring",
-  },
-];
-
-/**
- * Official exam-board sources only. These are the primary, free, and
- * authoritative places for past papers and specifications.
- *
- * TODO (owner): add your own curated third-party resources below. Check each
- * one's terms before linking, and note that some publishers restrict deep
- * links to paper PDFs.
- */
-const EXAM_BOARDS = [
-  {
-    title: "AQA",
-    href: "https://www.aqa.org.uk/find-past-papers-and-mark-schemes",
-    description:
-      "Past papers, mark schemes and examiner reports for the UK's largest exam board.",
-    meta: "GCSE · A-Level",
-  },
-  {
-    title: "Pearson Edexcel",
-    href: "https://qualifications.pearson.com/en/support/support-topics/exams/past-papers.html",
-    description:
-      "Past papers and mark schemes across Edexcel GCSE, IGCSE and A-Level specifications.",
-    meta: "GCSE · IGCSE · A-Level",
-  },
-  {
-    title: "OCR",
-    href: "https://www.ocr.org.uk/qualifications/past-paper-finder/",
-    description:
-      "OCR's past paper finder, including the A and B specification variants.",
-    meta: "GCSE · A-Level",
-  },
-  {
-    title: "WJEC / Eduqas",
-    href: "https://www.eduqas.co.uk/home/past-papers/",
-    description:
-      "Past papers for Eduqas and WJEC specifications, widely used in Wales and England.",
-    meta: "GCSE · A-Level",
   },
 ];
 
@@ -116,8 +78,8 @@ export default function RevisionPage() {
           <ButtonLink href="/revision/flashcards" size="lg">
             Open flashcards
           </ButtonLink>
-          <ButtonLink href="/timetable" variant="secondary" size="lg">
-            Build a timetable
+          <ButtonLink href="/revision/flashcards/new" variant="secondary" size="lg">
+            Create a deck
           </ButtonLink>
         </div>
       </PageHeader>
@@ -176,45 +138,32 @@ export default function RevisionPage() {
       <Section id="resources" className="scroll-mt-20">
         <SectionHeading
           eyebrow="Resources"
-          title="Past papers, straight from the source"
-          description="Start with the exam board that actually sets your paper. Their mark schemes and examiner reports tell you precisely how marks are awarded."
+          title="Filtered down to what your board actually sets"
+          description="The web has thousands of revision sites and most students never find the good ones. Narrow by board, subject and level to get a short list instead of a search page."
         />
 
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-[6px] border border-border bg-border md:grid-cols-2">
-          {EXAM_BOARDS.map((board) => (
-            <li key={board.title} className="bg-card">
-              <LinkCard
-                href={board.href}
-                title={board.title}
-                description={board.description}
-                meta={board.meta}
-                external
-              />
-            </li>
-          ))}
-        </ul>
+        <div className="mt-10">
+          <ResourceBrowser />
+        </div>
 
-        <div className="mt-8">
-          <Callout title="More resources coming here">
+        <div className="mt-10 max-w-2xl">
+          <Callout title="How this list is kept honest">
             <p>
-              This section is where your curated list of third-party resources
-              will live — revision sites, video channels, question banks and
-              subject-specific tools.
+              Official exam-board sources always rank first, then free before
+              paid. Cost is stated plainly — nothing free-looking that turns
+              out to be a paywall — and there are no affiliate links anywhere
+              in it.
             </p>
             <p>
-              The grid above is the pattern to follow: edit{" "}
-              <code className="rounded bg-card px-1.5 py-0.5 text-xs">
-                EXAM_BOARDS
-              </code>{" "}
-              in{" "}
-              <code className="rounded bg-card px-1.5 py-0.5 text-xs break-anywhere">
-                src/app/revision/page.tsx
-              </code>{" "}
-              to add entries.
+              Add or edit entries in{" "}
+              <code className="break-anywhere">src/lib/resources.ts</code>.
+              Every entry carries a one-line reason it earned its place; if
+              you cannot write one, it probably has not.
             </p>
           </Callout>
         </div>
       </Section>
+
     </>
   );
 }

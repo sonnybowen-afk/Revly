@@ -1,13 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Flame, Target, TrendingUp, Trash2 } from "lucide-react";
+import { Flame, Plus, Target, TrendingUp, Trash2 } from "lucide-react";
 import { DeckList } from "./deck-list";
 import { ReviewSession } from "./review-session";
 import { ForecastChart } from "./forecast-chart";
 import type { ProgressMap } from "./types";
-import { Button } from "@/components/ui/button";
-import { DECKS, getDeck } from "@/lib/decks";
+import { Button, ButtonLink } from "@/components/ui/button";
+import {
+  findDeck,
+  mergeDecks,
+  sanitiseUserDecks,
+  type UserDeck,
+} from "@/lib/user-decks";
 import {
   countDue,
   createCardState,
@@ -22,6 +27,10 @@ export function FlashcardsApp() {
     "flashcards",
     {},
   );
+  const [userDecks, setUserDecks, decksReady] = usePersistentState<UserDeck[]>(
+    "userDecks",
+    [],
+  );
   const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
 
@@ -31,12 +40,17 @@ export function FlashcardsApp() {
     setNow(Date.now());
   }, []);
 
+  const decks = useMemo(
+    () => mergeDecks(sanitiseUserDecks(userDecks)),
+    [userDecks],
+  );
+
   const allStates: CardState[] = useMemo(
     () =>
-      DECKS.flatMap((d) =>
+      decks.flatMap((d) =>
         d.cards.map((c) => progress[c.id] ?? createCardState(0)),
       ),
-    [progress],
+    [decks, progress],
   );
 
   const counts = useMemo(
@@ -61,9 +75,15 @@ export function FlashcardsApp() {
     setNow(Date.now());
   }
 
-  const activeDeck = activeDeckId ? getDeck(activeDeckId) : undefined;
+  function deleteDeck(deckId: string) {
+    setUserDecks((prev) => sanitiseUserDecks(prev).filter((d) => d.id !== deckId));
+  }
 
-  if (!hydrated || now === null) {
+  const activeDeck = activeDeckId
+    ? findDeck(activeDeckId, sanitiseUserDecks(userDecks))
+    : undefined;
+
+  if (!hydrated || !decksReady || now === null) {
     return <LoadingSkeleton />;
   }
 
@@ -110,12 +130,17 @@ export function FlashcardsApp() {
       <div>
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold">Your decks</h2>
+            <h2 className="font-display text-2xl">Your decks</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Pick a deck to start. Cards you find hard come back sooner.
             </p>
           </div>
 
+          <div className="flex items-center gap-2">
+          <ButtonLink href="/revision/flashcards/new" size="sm">
+            <Plus className="size-4" aria-hidden="true" />
+            New deck
+          </ButtonLink>
           {confirmingReset ? (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-muted-foreground">
@@ -142,13 +167,16 @@ export function FlashcardsApp() {
               Reset progress
             </Button>
           )}
+          </div>
         </div>
 
         <div className="mt-6">
           <DeckList
+            decks={decks}
             progress={progress}
             now={now}
             onStart={(id) => setActiveDeckId(id)}
+            onDelete={deleteDeck}
           />
         </div>
       </div>

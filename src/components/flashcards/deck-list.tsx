@@ -1,11 +1,12 @@
 "use client";
 
-import { Layers, Play } from "lucide-react";
+import { Layers, Play, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DECKS } from "@/lib/decks";
+import type { Deck } from "@/lib/decks";
 import { countDue, createCardState, type CardState } from "@/lib/srs";
 import { cn, plural } from "@/lib/utils";
+import { isUserDeck } from "@/lib/user-decks";
 import type { ProgressMap } from "./types";
 
 const ACCENT_TONE = {
@@ -16,17 +17,21 @@ const ACCENT_TONE = {
 } as const;
 
 export function DeckList({
+  decks,
   progress,
   now,
   onStart,
+  onDelete,
 }: {
+  decks: Deck[];
   progress: ProgressMap;
   now: number;
   onStart: (deckId: string) => void;
+  onDelete: (deckId: string) => void;
 }) {
   return (
     <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {DECKS.map((deck) => {
+      {decks.map((deck) => {
         const states: CardState[] = deck.cards.map(
           (c) => progress[c.id] ?? createCardState(0),
         );
@@ -38,7 +43,19 @@ export function DeckList({
           <li key={deck.id} className="card-surface flex flex-col p-6">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <Badge tone={ACCENT_TONE[deck.accent]}>{deck.subject}</Badge>
-              <Badge tone="neutral">{deck.level}</Badge>
+              <div className="flex items-center gap-2">
+                <Badge tone="neutral">{deck.level}</Badge>
+                {isUserDeck(deck.id) ? (
+                  <button
+                    type="button"
+                    onClick={() => onDelete(deck.id)}
+                    aria-label={`Delete ${deck.title}`}
+                    className="grid size-8 cursor-pointer place-items-center rounded-[3px] text-muted-foreground transition-colors hover:bg-destructive-soft hover:text-destructive"
+                  >
+                    <Trash2 className="size-3.5" aria-hidden="true" />
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             <h3 className="mt-4 text-lg font-bold">{deck.title}</h3>

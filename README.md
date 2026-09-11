@@ -9,8 +9,9 @@ repetition** — rather than around content volume.
 | Area | Route | State |
 |---|---|---|
 | Landing page | `/` | Complete |
-| Revision hub + resources | `/revision` | Complete; third-party resource list to be curated |
+| Revision hub + resource browser | `/revision` | Complete; 22 curated resources, filterable |
 | Flashcards (SM-2 scheduler) | `/revision/flashcards` | Fully functional |
+| Create a deck | `/revision/flashcards/new` | Write / from notes / import |
 | Revision timetable builder | `/timetable` | Fully functional |
 | Tutoring | `/tutoring` | Structure complete; pricing and policies are placeholders |
 | UCAS guidance | `/ucas` | Complete; verify dates each cycle |
@@ -49,6 +50,14 @@ src/
     srs.test.ts            21 tests
     timetable.ts           Timetable allocation + layout ← core logic
     timetable.test.ts      21 tests
+    cards-io.ts            Import parsers (Anki / Quizlet / ChatGPT / CSV)
+    cards-io.test.ts       18 tests
+    notes-to-cards.ts      Notes -> flashcard extraction
+    notes-to-cards.test.ts 17 tests
+    resources.ts           Curated resource library + filtering
+    resources.test.ts      14 tests
+    user-decks.ts          Learner-created deck model
+    user-decks.test.ts     9 tests
     decks.ts               Seed card content
     storage.ts             Versioned, SSR-safe localStorage
 ```
@@ -77,6 +86,54 @@ Weights each subject by confidence (1–5) and exam proximity, apportions the
 week's slots by largest-remainder so no slot is lost to rounding, then lays
 them out avoiding back-to-back repeats of the same subject (interleaving).
 Same inputs always produce the same timetable.
+
+### Creating decks (`/revision/flashcards/new`)
+
+Three routes in, all converging on the same editable table so nothing is
+saved without review:
+
+**Write your own** — a plain card editor.
+
+**From your notes** — pastes notes and extracts cards from their
+*structure*: `Term: definition` lines, headings followed by bullets, and
+any `Q:`/`A:` pairs already written.
+
+> This is a deterministic extractor, **not a language model**, and the UI
+> says so plainly. Revly is a static site with no server; calling an LLM
+> from the browser would mean publishing an API key in the page source.
+> The trade is a fair one — it is instant, free, works offline and nothing
+> leaves the browser — but it cannot paraphrase or invent a question the
+> notes do not already imply, so it produces drafts you edit.
+>
+> `generateCards(notes)` in `src/lib/notes-to-cards.ts` is the seam. Put a
+> real model behind a server route with the same signature and no caller
+> changes.
+
+**Import** — auto-detects the format:
+
+| Source | Handled |
+|---|---|
+| Anki | Plain-text export, including `#separator` / `#tags column` directives, tags and HTML fields |
+| Quizlet | Tab default, plus configurable field/record separators for custom exports |
+| ChatGPT | Markdown tables and `Q:`/`A:` prose, with markdown emphasis stripped |
+| Generic | CSV with quoted fields, TSV, semicolon, blank-line-separated pairs |
+
+Anki `.apkg` files are zipped SQLite databases and cannot be read in the
+browser — the UI says to use Anki's plain-text export instead.
+
+### Resource library (`src/lib/resources.ts`)
+
+22 entries tagged by board, subject, level, type and cost, so a learner
+goes from "I sit AQA GCSE Biology" to a short list rather than a search
+page. Official board sources always rank first, then free before paid.
+Board-agnostic entries survive a board filter.
+
+Rules enforced by tests: https only, no affiliate or tracking parameters,
+every entry carries a one-line reason it earned its place, and every board
+has an official past-paper source.
+
+**Links have not been verified from this machine** (the build environment
+blocks outbound requests to most hosts). Check them before launch.
 
 ## Design system
 
