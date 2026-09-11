@@ -34,28 +34,33 @@ const STEPS = [
   },
 ];
 
-/*
- * TODO (owner): replace with your real pricing before launch.
- * UK tutoring rates are typically quoted per hour and vary by level and
- * tutor experience. Whatever you set, display it inclusive of VAT if you
- * are VAT-registered, and make the cancellation terms explicit.
+/**
+ * Rates are set by each tutor, not by a fixed price list — experience,
+ * subject scarcity and level all move the number. What is fixed is the
+ * floor: no tutor on the platform charges below MINIMUM_HOURLY_RATE.
+ *
+ * The exact rate for a given tutor is shown on their profile before any
+ * booking is confirmed, so nobody is quoted a range and billed something
+ * else.
  */
-const PRICING = [
+export const MINIMUM_HOURLY_RATE = 25;
+
+const LEVELS = [
   {
     name: "GCSE",
-    price: "£00",
-    unit: "per hour",
+    rate: `From £${MINIMUM_HOURLY_RATE}`,
+    unit: "per hour · set by tutor",
     features: [
       "One-to-one, online or in person",
-      "Exam-board specific",
+      "Matched to your exam board",
       "Session notes after each lesson",
-      "Flashcards added for what you missed",
+      "Flashcards added for whatever you missed",
     ],
   },
   {
     name: "A-Level",
-    price: "£00",
-    unit: "per hour",
+    rate: `From £${MINIMUM_HOURLY_RATE}`,
+    unit: "per hour · set by tutor",
     featured: true,
     features: [
       "Subject specialists only",
@@ -65,14 +70,14 @@ const PRICING = [
     ],
   },
   {
-    name: "Intensive",
-    price: "£000",
-    unit: "per block",
+    name: "Exam intensive",
+    rate: "Block rate",
+    unit: "six sessions · priced by tutor",
     features: [
       "Six sessions in the run-up to exams",
       "Full diagnostic in session one",
       "Priority scheduling during study leave",
-      "Shared progress updates for parents",
+      "Progress updates shared with parents",
     ],
   },
 ];
@@ -97,6 +102,11 @@ const FAQS = [
     question: "Can parents see progress?",
     answer:
       "Explain your reporting — session notes, periodic summaries, and whether parents can attend or observe. Be clear about what a student aged 16+ can keep private.",
+  },
+  {
+    question: "Why do rates differ between tutors?",
+    answer:
+      "Because experience and subject scarcity differ. Every tutor sets their own hourly rate above a £25 floor, and it is shown in full on their profile before you book. A higher rate usually reflects examining experience, a shortage subject, or a track record at the grade you are chasing — not a better tier of service.",
   },
   {
     question: "What is the cancellation policy?",
@@ -143,25 +153,29 @@ export default function TutoringPage() {
       <Section className="border-y border-border bg-background-subtle">
         <SectionHeading
           eyebrow="Pricing"
-          title="Clear rates, no packages you don't need"
+          title="Tutors set their own rate, starting at £25"
           align="center"
         />
 
-        <div className="mx-auto mt-6 max-w-2xl">
-          <Callout tone="warning" title="Placeholder pricing">
-            <p>
-              The figures below are dummy values. Set your real rates in{" "}
-              <code className="rounded bg-card px-1.5 py-0.5 text-xs break-anywhere">
-                src/app/tutoring/page.tsx
-              </code>{" "}
-              before launch, and make sure the cancellation terms and any VAT
-              treatment are stated.
-            </p>
-          </Callout>
+        <div className="mx-auto mt-8 max-w-2xl text-center">
+          <p className="text-muted-foreground leading-relaxed">
+            There is no single price, because there is no single tutor. A
+            newly qualified GCSE tutor and a Chief Examiner with twenty years
+            in A-Level Physics are not the same service, and pricing them
+            identically would be dishonest to both.
+          </p>
+          <p className="mt-4 text-muted-foreground leading-relaxed">
+            What is fixed is the floor:{" "}
+            <strong className="font-semibold text-foreground">
+              no tutor charges less than £{MINIMUM_HOURLY_RATE} an hour
+            </strong>
+            . Each tutor&apos;s exact rate appears on their profile before you
+            book — you will never be shown a range and billed something else.
+          </p>
         </div>
 
-        <ul className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-3 md:gap-6">
-          {PRICING.map((tier) => (
+        <ul className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3 md:gap-6">
+          {LEVELS.map((tier) => (
             <li
               key={tier.name}
               className={
@@ -177,12 +191,12 @@ export default function TutoringPage() {
               ) : null}
               <h3 className="text-lg font-bold">{tier.name}</h3>
               <p className="mt-4">
-                <span className="tabular text-4xl font-bold">{tier.price}</span>
-                <span className="ml-1.5 text-sm text-muted-foreground">
-                  {tier.unit}
-                </span>
+                <span className="tabular text-3xl font-bold">{tier.rate}</span>
               </p>
-              <ul className="mt-6 flex-1 space-y-3">
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                {tier.unit}
+              </p>
+              <ul className="mt-6 flex-1 space-y-3 border-t border-border pt-6">
                 {tier.features.map((f) => (
                   <li key={f} className="flex gap-2.5 text-sm">
                     <span
@@ -196,6 +210,18 @@ export default function TutoringPage() {
             </li>
           ))}
         </ul>
+
+        <div className="mx-auto mt-10 max-w-2xl">
+          <Callout tone="warning" title="Still to confirm before launch">
+            <p>
+              The £{MINIMUM_HOURLY_RATE} floor is set. You still need to state
+              your cancellation terms and, if you are VAT-registered, whether
+              displayed rates include VAT — both are required for consumer
+              pricing to be compliant, and ambiguity here causes most billing
+              disputes.
+            </p>
+          </Callout>
+        </div>
       </Section>
 
       <Section>

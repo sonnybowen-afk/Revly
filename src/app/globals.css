@@ -238,6 +238,11 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Anchor targets clear the sticky header instead of hiding beneath it. */
+  [id] {
+    scroll-margin-top: 5rem;
+  }
 }
 
 @layer utilities {

@@ -106,10 +106,48 @@ Moving to cross-device sync means adding a backend and, at that point, a
 privacy policy and a lawful basis for processing — note that many users will
 be under 16.
 
+## Deployment
+
+The site builds to a **fully static export** — every route is prerendered and
+the flashcard scheduler and timetable run entirely client-side, so there is no
+server to host and no running cost.
+
+```bash
+npm run build:pages    # static export -> out/
+```
+
+### GitHub Pages (configured)
+
+`.github/workflows/deploy.yml` builds and deploys on every push to `main` or
+the current working branch. It runs the unit tests first, so a broken
+scheduler cannot reach production.
+
+**One manual step is required before the first deploy:**
+
+> Repository **Settings → Pages → Build and deployment → Source: GitHub
+> Actions**
+
+Nothing deploys until that is set — it cannot be enabled from a workflow. Once
+it is, push or re-run the workflow and the site goes live at
+`https://<owner>.github.io/Revly/`.
+
+The base path comes from `actions/configure-pages`, so attaching a custom
+domain later needs no code change: add the domain in Pages settings and the
+next build picks up the empty base path automatically.
+
+### Deploying elsewhere
+
+Any static host works — Netlify, Cloudflare Pages, S3. Build with
+`DEPLOY_TARGET=github-pages NEXT_PUBLIC_BASE_PATH="" npm run build:pages` and
+publish `out/`.
+
+For Vercel, deploy the repository as a normal Next.js project and ignore the
+export config entirely — `DEPLOY_TARGET` stays unset there.
+
 ## Before you launch
 
 - [ ] Replace the placeholder testimonials in `src/components/landing/testimonials.tsx`, or delete the section
-- [ ] Set real pricing and policies in `src/app/tutoring/page.tsx`
+- [ ] Confirm cancellation terms and VAT treatment on `/tutoring` (the £25 rate floor is set in `MINIMUM_HOURLY_RATE`)
 - [ ] Write the safeguarding and DBS content — this is a legal obligation, not copy
 - [ ] Wire the enquiry form to a real backend or form service
 - [ ] Verify UCAS dates for the current cycle
