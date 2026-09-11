@@ -14,6 +14,7 @@ const NAV = [
   { href: "/tutoring", label: "Tutoring" },
   { href: "/ucas", label: "UCAS" },
   { href: "/nea", label: "NEA" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 export function SiteHeader() {

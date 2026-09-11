@@ -14,7 +14,9 @@ repetition** — rather than around content volume.
 | Create a deck | `/revision/flashcards/new` | Write / from notes / import |
 | Revision timetable builder | `/timetable` | Fully functional |
 | Tutoring | `/tutoring` | Structure complete; pricing and policies are placeholders |
-| UCAS guidance | `/ucas` | Complete; verify dates each cycle |
+| UCAS guidance + tuition | `/ucas` | Complete; verify dates each cycle |
+| Statement checker | `/ucas/review` | Fully functional |
+| Pricing | `/pricing` | Shopfront only — no payments wired |
 | NEA & coursework | `/nea` | Complete |
 
 ## Getting started
@@ -56,6 +58,10 @@ src/
     notes-to-cards.test.ts 17 tests
     resources.ts           Curated resource library + filtering
     resources.test.ts      14 tests
+    pricing.ts             Plans and UCAS products
+    pricing.test.ts        10 tests
+    statement-review.ts    UCAS personal statement checker
+    statement-review.test.ts  19 tests
     user-decks.ts          Learner-created deck model
     user-decks.test.ts     9 tests
     decks.ts               Seed card content
@@ -134,6 +140,57 @@ has an official past-paper source.
 
 **Links have not been verified from this machine** (the build environment
 blocks outbound requests to most hosts). Check them before launch.
+
+## Pricing model
+
+One decision worth knowing about, because it was a judgement call rather
+than a spec: **the free tier has no lives, hearts or daily review cap.**
+
+Lives work in Duolingo because running out costs a *streak*. Here it
+would cost a student revision time in the weeks before an exam, and the
+people who hit the wall first are the ones who cannot pay. Gating the
+spaced-repetition scheduler — the one component with evidence behind it
+— would make the product worse at its stated job.
+
+So reviewing is free and uncapped forever. What is charged for is scale
+(unlimited decks, imports, sync), analysis, and human time.
+
+| Plan | Price | What it adds |
+|---|---|---|
+| Free | £0 | Full scheduler, all seed decks, 3 own decks, timetable, all guidance |
+| Plus | £6/mo or £48/yr | Unlimited decks and imports, sync, retention analytics, adaptive timetable |
+| Family | £10/mo or £84/yr | Plus for four students, optional parent summary |
+
+UCAS support is priced separately — a subscription suits weekly revision,
+not an application you submit once: course £39 one-off, human statement
+review £49 one-off, UCAS tutor from £30/hour.
+
+**No payments are wired up.** There are no accounts and no payment
+processor, so every limit is presentational. Enforcing them needs auth,
+a database and a provider such as Stripe.
+
+## Statement checker (`src/lib/statement-review.ts`)
+
+Checks a UCAS personal statement against the 2026-entry format (three
+questions, 4,000 characters total, 350 minimum each) and the faults that
+reliably cost marks:
+
+- Named university — disqualifying, since one statement goes to all five
+- Cliché or quotation openings
+- Claims of interest with no evidence behind them
+- Activities listed with no reflection drawn from them
+- Question 3 answering "what" but not "why"
+- Run-on sentences, "I"-heavy openings, intensifier spam
+
+Every finding states the problem, why an admissions tutor reacts to it,
+and a concrete fix. Same constraint as the notes converter: rules, not a
+language model. That matters less here than you would expect — most of
+what separates a weak statement from a strong one is structural. What it
+cannot judge is whether the argument is *interesting*, and the UI says so.
+
+The university regex is deliberately case-sensitive on proper nouns
+(lowercasing it would flag "I want to go to university") and guards
+"Cambridge" against the exam-board sense.
 
 ## Design system
 
