@@ -40,6 +40,11 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          # Turns Pages on via the API if it isn't already, so the first
+          # deploy needs no manual trip to repository settings. Requires the
+          # pages: write permission granted above.
+          enablement: true
 
       - name: Build
         env:
