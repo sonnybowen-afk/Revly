@@ -1,135 +1,132 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  BookOpenCheck,
-  CalendarRange,
-  GraduationCap,
-  Layers,
-  Library,
-  Users,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
 interface Pillar {
   href: string;
+  index: string;
   title: string;
   body: string;
-  Icon: typeof Layers;
-  tone: string;
-  /** Bento span — the lead tile is deliberately larger. */
-  span: string;
-  points?: string[];
+  detail?: string[];
 }
 
 const PILLARS: Pillar[] = [
   {
     href: "/revision/flashcards",
+    index: "01",
     title: "Flashcards that schedule themselves",
-    body: "An Anki-grade spaced-repetition engine. Grade a card and it reappears exactly when you are about to forget it — not before, not after.",
-    Icon: Layers,
-    tone: "text-primary",
-    span: "md:col-span-2 md:row-span-2",
-    points: [
+    body: "An Anki-grade spaced-repetition engine. Grade a card and it returns exactly when you are about to forget it — not before, not after.",
+    detail: [
       "SM-2 scheduling with learning steps and lapse handling",
-      "Active recall enforced — answer hidden until you commit",
+      "Active recall enforced: the answer is not on the page until you commit",
       "Retention stats and a 30-day workload forecast",
     ],
   },
   {
     href: "/timetable",
+    index: "02",
     title: "Revision timetable",
-    body: "Tell it your subjects, exam dates and free evenings. It builds a balanced plan and rebalances when you fall behind.",
-    Icon: CalendarRange,
-    tone: "text-study",
-    span: "md:col-span-2",
+    body: "Your subjects, exam dates and free evenings in — a balanced week out, weighted towards what you are weakest at.",
   },
   {
     href: "/tutoring",
+    index: "03",
     title: "Tutoring",
-    body: "Matched, vetted subject specialists for the topics that are not shifting on their own.",
-    Icon: Users,
-    tone: "text-success",
-    span: "",
+    body: "Vetted subject specialists, for the topics that will not shift on their own.",
   },
   {
     href: "/ucas",
+    index: "04",
     title: "UCAS support",
-    body: "Deadlines, personal statement structure and offer decisions, without the guesswork.",
-    Icon: GraduationCap,
-    tone: "text-warning",
-    span: "",
+    body: "Deadlines, the three personal statement questions, and what each offer actually commits you to.",
   },
   {
     href: "/nea",
+    index: "05",
     title: "NEA & coursework",
-    body: "Stage-by-stage guidance for the non-exam assessment that quietly decides a grade boundary.",
-    Icon: BookOpenCheck,
-    tone: "text-primary",
-    span: "md:col-span-2",
+    body: "Stage-by-stage guidance for the assessment that quietly decides a grade boundary.",
   },
   {
     href: "/revision#resources",
+    index: "06",
     title: "Vetted resources",
-    body: "Past papers, mark schemes and the handful of channels actually worth your time.",
-    Icon: Library,
-    tone: "text-study",
-    span: "md:col-span-2",
+    body: "Past papers and mark schemes, straight from the board that sets your paper.",
   },
 ];
 
+/**
+ * A ruled index rather than a grid of shadowed cards. The 1px gaps come
+ * from the container's background showing through, so the whole block
+ * reads as one table — closer to a contents page than a dashboard.
+ */
 export function Pillars() {
+  const [lead, ...rest] = PILLARS;
+
   return (
-    <ul className="grid gap-4 md:grid-cols-4 md:auto-rows-[minmax(11rem,auto)]">
-      {PILLARS.map((pillar) => (
-        <li key={pillar.href} className={cn("flex", pillar.span)}>
-          <Link
-            href={pillar.href}
-            className={cn(
-              "group card-surface flex w-full flex-col p-6 md:p-7",
-              "transition-[transform,box-shadow] duration-200 ease-out",
-              "hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]",
-              "motion-reduce:hover:translate-y-0",
-            )}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <span
-                className={cn(
-                  "grid size-11 place-items-center rounded-xl bg-muted",
-                  pillar.tone,
-                )}
-              >
-                <pillar.Icon className="size-5" aria-hidden="true" />
-              </span>
-              <ArrowUpRight
-                aria-hidden="true"
-                className="size-5 text-muted-foreground transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              />
-            </div>
-
-            <h3 className="mt-5 text-lg font-bold">{pillar.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {pillar.body}
+    <div className="overflow-hidden rounded-[6px] border border-border bg-border">
+      <div className="grid gap-px lg:grid-cols-3">
+        {/* Lead entry spans two columns and carries the detail list. */}
+        <Link
+          href={lead.href}
+          className="group flex flex-col justify-between bg-card p-7 transition-colors duration-150 hover:bg-muted md:p-9 lg:col-span-2 lg:row-span-2"
+        >
+          <div>
+            <span className="figures-display text-sm text-muted-foreground">
+              {lead.index}
+            </span>
+            <h3 className="mt-4 max-w-[20ch] font-display text-2xl leading-tight md:text-[1.75rem]">
+              {lead.title}
+            </h3>
+            <p className="mt-4 max-w-[52ch] text-sm leading-relaxed text-muted-foreground md:text-base">
+              {lead.body}
             </p>
+          </div>
 
-            {pillar.points ? (
-              <ul className="mt-6 space-y-2.5 border-t border-border pt-5">
-                {pillar.points.map((point) => (
-                  <li
-                    key={point}
-                    className="flex gap-2.5 text-sm text-muted-foreground"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="mt-2 size-1.5 shrink-0 rounded-full bg-primary"
-                    />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+          <ul className="mt-8 space-y-2.5 border-t border-border pt-6">
+            {lead.detail?.map((d) => (
+              <li
+                key={d}
+                className="flex gap-3 text-sm leading-relaxed text-muted-foreground"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[0.6em] h-px w-3 shrink-0 bg-border-strong"
+                />
+                {d}
+              </li>
+            ))}
+          </ul>
+
+          <span className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+            Open the flashcards
+            <ArrowRight
+              className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </span>
+        </Link>
+
+        {rest.map((p) => (
+          <Link
+            key={p.href}
+            href={p.href}
+            className="group flex flex-col bg-card p-7 transition-colors duration-150 hover:bg-muted"
+          >
+            <span className="figures-display text-sm text-muted-foreground">
+              {p.index}
+            </span>
+            <h3 className="mt-3 font-display text-xl leading-tight">
+              {p.title}
+            </h3>
+            <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+              {p.body}
+            </p>
+            <ArrowRight
+              aria-hidden="true"
+              className="mt-6 size-4 text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-foreground"
+            />
           </Link>
-        </li>
-      ))}
-    </ul>
+        ))}
+      </div>
+    </div>
   );
 }

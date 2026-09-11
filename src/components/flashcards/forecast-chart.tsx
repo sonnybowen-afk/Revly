@@ -52,7 +52,7 @@ export function ForecastChart({
           onClick={() => setShowTable((v) => !v)}
           aria-expanded={showTable}
           aria-controls={tableId}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-border px-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-border px-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
         >
           <Table2 className="size-4" aria-hidden="true" />
           {showTable ? "Hide data" : "View data"}
@@ -60,7 +60,7 @@ export function ForecastChart({
       </figcaption>
 
       {total === 0 ? (
-        <div className="mt-6 grid place-items-center rounded-xl border border-dashed border-border-strong px-6 py-10 text-center">
+        <div className="mt-6 grid place-items-center rounded-md border border-dashed border-border-strong px-6 py-10 text-center">
           <CalendarClock
             className="size-8 text-border-strong"
             aria-hidden="true"
@@ -121,7 +121,7 @@ export function ForecastChart({
       )}
 
       {showTable ? (
-        <div id={tableId} className="mt-6 max-h-64 overflow-auto rounded-xl border border-border">
+        <div id={tableId} className="mt-6 max-h-64 overflow-auto rounded-md border border-border">
           <table className="w-full text-sm">
             <caption className="sr-only">
               Cards due per day over the next 30 days

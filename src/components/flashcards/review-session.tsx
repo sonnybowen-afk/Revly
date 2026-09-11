@@ -29,25 +29,25 @@ const GRADES: { grade: Grade; label: string; key: string; className: string }[] 
       label: "Again",
       key: "1",
       className:
-        "border-destructive/35 text-destructive hover:bg-destructive-soft",
+        "border-destructive/40 text-destructive hover:bg-destructive-soft",
     },
     {
       grade: "hard",
       label: "Hard",
       key: "2",
-      className: "border-warning/35 text-warning hover:bg-warning-soft",
+      className: "border-accent/45 text-accent hover:bg-accent-soft",
     },
     {
       grade: "good",
       label: "Good",
       key: "3",
-      className: "border-primary/35 text-primary hover:bg-primary-soft",
+      className: "border-primary/45 text-primary hover:bg-primary-soft",
     },
     {
       grade: "easy",
       label: "Easy",
       key: "4",
-      className: "border-success/35 text-success hover:bg-success-soft",
+      className: "border-success/45 text-success hover:bg-success-soft",
     },
   ];
 
@@ -194,7 +194,7 @@ export function ReviewSession({
         <button
           type="button"
           onClick={onExit}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
         >
           <ChevronLeft className="size-4" aria-hidden="true" />
           All decks
@@ -232,7 +232,7 @@ export function ReviewSession({
           <PhaseBadge state={cardState} />
         </div>
 
-        <h2 className="mt-7 text-xl font-semibold leading-snug md:text-2xl [overflow-wrap:anywhere]">
+        <h2 className="mt-7 font-display text-2xl leading-snug md:text-[1.875rem] [overflow-wrap:anywhere]">
           {card.front}
         </h2>
 
@@ -248,13 +248,15 @@ export function ReviewSession({
             </p>
 
             {card.hint ? (
-              <div className="mt-5 flex gap-3 rounded-xl bg-warning-soft p-4">
+              <div className="mt-6 flex gap-3 border-l-2 border-accent py-1 pl-4">
                 <Lightbulb
-                  className="mt-0.5 size-5 shrink-0 text-warning"
+                  className="mt-0.5 size-4 shrink-0 text-accent"
                   aria-hidden="true"
                 />
-                <p className="text-sm leading-relaxed text-warning-soft-foreground">
-                  <span className="font-semibold">Exam technique: </span>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  <span className="font-semibold text-foreground">
+                    Exam technique.{" "}
+                  </span>
                   {card.hint}
                 </p>
               </div>
@@ -290,7 +292,7 @@ export function ReviewSession({
                   onClick={() => grade(g.grade)}
                   className={cn(
                     "flex min-h-16 cursor-pointer flex-col items-center justify-center gap-0.5",
-                    "rounded-xl border-2 bg-card font-semibold",
+                    "rounded-[4px] border bg-card font-semibold",
                     "transition-[background-color,transform] duration-150 active:scale-[0.98]",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                     g.className,
@@ -365,7 +367,7 @@ function SessionComplete({
 
   return (
     <div className="mx-auto max-w-xl text-center">
-      <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-success-soft text-success">
+      <span className="mx-auto grid size-16 place-items-center rounded-[4px] border border-primary/30 text-primary">
         <PartyPopper className="size-8" aria-hidden="true" />
       </span>
       <h2 className="mt-6 text-2xl font-bold md:text-3xl">

@@ -6,13 +6,12 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    "bg-primary text-on-primary hover:bg-primary-hover shadow-sm hover:shadow-md",
+  primary: "bg-primary text-on-primary hover:bg-primary-hover",
   secondary:
-    "bg-card text-foreground border border-border-strong hover:bg-muted",
+    "bg-transparent text-foreground border border-border-strong hover:bg-muted",
   ghost: "text-muted-foreground hover:text-foreground hover:bg-muted",
   danger:
-    "bg-destructive-soft text-destructive-soft-foreground hover:brightness-95 border border-transparent",
+    "bg-transparent text-destructive border border-destructive/40 hover:bg-destructive-soft",
 };
 
 // Every size clears the 44px minimum touch target.
@@ -23,9 +22,9 @@ const SIZES: Record<Size, string> = {
 };
 
 const BASE =
-  "inline-flex items-center justify-center rounded-xl font-semibold cursor-pointer " +
-  "transition-[background-color,box-shadow,color,transform] duration-200 ease-out " +
-  "active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 " +
+  "inline-flex items-center justify-center rounded-md font-semibold cursor-pointer " +
+  "transition-[background-color,color,border-color] duration-150 ease-out " +
+  "disabled:pointer-events-none disabled:opacity-50 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 export function buttonStyles(variant: Variant = "primary", size: Size = "md") {

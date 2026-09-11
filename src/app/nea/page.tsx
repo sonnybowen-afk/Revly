@@ -263,7 +263,7 @@ export default function NeaPage() {
       <Section className="border-t border-border bg-background-subtle">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div>
-            <span className="grid size-11 place-items-center rounded-xl bg-primary-soft text-primary-soft-foreground">
+            <span className="grid size-10 place-items-center rounded-[4px] border border-border text-primary">
               <BookOpenCheck className="size-5" aria-hidden="true" />
             </span>
             <h2 className="mt-5 text-3xl font-bold">Common questions</h2>

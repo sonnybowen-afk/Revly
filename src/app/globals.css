@@ -1,158 +1,138 @@
 @import "tailwindcss";
 
-/* Class-based dark mode so the theme toggle can override the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
-  Revly design tokens
+  Revly design system
   ───────────────────
-  Style foundation : Minimalism / Swiss  +  Bento Box Grid
-  Primary          : Indigo  — premium, modern, non-corporate
-  Study accent     : Teal    — education palette (LMS)
-  Progress         : Emerald — "session green"
-  Due / attention  : Amber   — "course amber"
+  Direction : Editorial grid. High contrast, single accent, type-led.
 
-  Every colour is declared as a SEMANTIC token. Components never use raw hex.
+  The deliberate choices, and why:
+    Warm paper (#FAF8F5) not cold slate — screens of cold grey read
+      generic; warm paper reads printed.
+    Near-black warm ink (#1C1B17) not pure black — softer on long reads,
+      and it sits properly against warm paper.
+    ONE accent, a deep academic green. No second brand hue competing.
+    Hairline rules, not drop shadows. Nothing floats without reason.
+    Small radii (6–8px), not pill-soft. Editorial, not app-store.
+    Serif for display, grotesque for UI — hierarchy from typeface, not
+      just from size and weight.
 */
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-newsreader), ui-serif, Georgia, "Times New Roman",
+    serif;
 
-  /* Brand ramps */
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
-  --color-brand-950: #1e1b4b;
-
-  --color-study-400: #2dd4bf;
-  --color-study-500: #14b8a6;
-  --color-study-600: #0d9488;
-  --color-study-700: #0f766e;
-
-  /* Spacing rhythm (4/8pt) */
-  --space-section: 6rem;
-  --space-section-sm: 3.5rem;
-
-  /* Motion tokens — one shared rhythm across the product */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 150ms;
-  --dur-base: 220ms;
-  --dur-slow: 380ms;
+  --dur-fast: 140ms;
+  --dur-base: 200ms;
+  --dur-slow: 340ms;
 
-  --radius-card: 1.25rem;
+  --radius-card: 0.5rem;
+  --radius-control: 0.375rem;
 }
 
-/* ── Semantic tokens : LIGHT ─────────────────────────────────────── */
+/* ── LIGHT ───────────────────────────────────────────────────────── */
 :root {
-  --background: #f8fafc;
-  --background-subtle: #f1f5f9;
-  --foreground: #0f172a;
+  --background: #faf8f5;
+  --background-subtle: #f3efe9;
+  --foreground: #1c1b17;
 
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --card-border: #e2e8f0;
+  --card-foreground: #1c1b17;
+  --card-border: #e4dfd6;
 
-  --muted: #f1f5f9;
-  --muted-foreground: #51607a;
+  --muted: #f1ede6;
+  --muted-foreground: #6b6862;
 
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --on-primary: #ffffff;
-  --primary-soft: #eef2ff;
-  --primary-soft-foreground: #3730a3;
+  --primary: #1d4d3e;
+  --primary-hover: #163d31;
+  --on-primary: #faf8f5;
+  --primary-soft: #e8f0ec;
+  --primary-soft-foreground: #163d31;
 
-  --study: #0d9488;
-  --study-soft: #f0fdfa;
-  --study-soft-foreground: #115e56;
+  --accent: #8a5a12;
+  --accent-soft: #f7efe0;
+  --accent-soft-foreground: #6f4710;
 
-  --success: #047857;
-  --success-soft: #ecfdf5;
-  --success-soft-foreground: #065f46;
+  --success: #1d6e4f;
+  --success-soft: #e6f1eb;
+  --success-soft-foreground: #14503a;
 
-  --warning: #b45309;
-  --warning-soft: #fffbeb;
-  --warning-soft-foreground: #92400e;
+  --warning: #8a5a12;
+  --warning-soft: #f7efe0;
+  --warning-soft-foreground: #6f4710;
 
-  --destructive: #dc2626;
-  --destructive-soft: #fef2f2;
-  --destructive-soft-foreground: #991b1b;
+  --destructive: #9b2c2c;
+  --destructive-soft: #f8eaea;
+  --destructive-soft-foreground: #7a2222;
 
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --ring: #4f46e5;
+  --border: #e4dfd6;
+  --border-strong: #cdc6b9;
+  --rule: #1c1b17;
+  --ring: #1d4d3e;
 
-  /* Chart marks — both steps validated against their own surface
-     (lightness band, chroma floor, >=3:1 contrast). Single series, so
-     one hue is correct; never cycle hues here. */
-  --chart-bar: #4f46e5;
-  --chart-bar-muted: #c7d2fe;
-  --chart-grid: #e2e8f0;
+  /* Validated for this surface: lightness band, chroma floor, 3:1 contrast. */
+  --chart-bar: #12805a;
+  --chart-bar-quiet: #c9e0d5;
+  --chart-grid: #e4dfd6;
 
-  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04),
-    0 8px 24px -12px rgba(15, 23, 42, 0.12);
-  --shadow-lift: 0 2px 4px rgba(15, 23, 42, 0.05),
-    0 16px 40px -16px rgba(15, 23, 42, 0.2);
+  /* Overlays only. Flat surfaces carry a rule instead. */
+  --shadow-overlay: 0 24px 60px -24px rgba(28, 27, 23, 0.28);
 
   color-scheme: light;
 }
 
-/* ── Semantic tokens : DARK ──────────────────────────────────────── */
+/* ── DARK ────────────────────────────────────────────────────────── */
 .dark {
-  --background: #090e1a;
-  --background-subtle: #0f172a;
-  --foreground: #e8edf7;
+  --background: #171612;
+  --background-subtle: #1b1a15;
+  --foreground: #edeae3;
 
-  --card: #111a2e;
-  --card-foreground: #e8edf7;
-  --card-border: #1e293b;
+  --card: #201f1a;
+  --card-foreground: #edeae3;
+  --card-border: #35332b;
 
-  --muted: #172032;
-  --muted-foreground: #9dabc4;
+  --muted: #26251f;
+  --muted-foreground: #a8a399;
 
-  --primary: #818cf8;
-  --primary-hover: #a5b4fc;
-  --on-primary: #10132b;
-  --primary-soft: #1e1b4b;
-  --primary-soft-foreground: #c7d2fe;
+  --primary: #7fc9a3;
+  --primary-hover: #9ad8b8;
+  --on-primary: #10211a;
+  --primary-soft: #1a2e26;
+  --primary-soft-foreground: #a9ddc4;
 
-  --study: #2dd4bf;
-  --study-soft: #0c2f2c;
-  --study-soft-foreground: #99f6e4;
+  --accent: #e0a94a;
+  --accent-soft: #2e2416;
+  --accent-soft-foreground: #f0cf93;
 
-  --success: #34d399;
-  --success-soft: #0a2e24;
-  --success-soft-foreground: #a7f3d0;
+  --success: #6ec39b;
+  --success-soft: #16291f;
+  --success-soft-foreground: #a5dcc0;
 
-  --warning: #fbbf24;
-  --warning-soft: #341f06;
-  --warning-soft-foreground: #fde68a;
+  --warning: #e0a94a;
+  --warning-soft: #2e2416;
+  --warning-soft-foreground: #f0cf93;
 
-  --destructive: #f87171;
-  --destructive-soft: #38151a;
-  --destructive-soft-foreground: #fecaca;
+  --destructive: #e88c8c;
+  --destructive-soft: #331e1e;
+  --destructive-soft-foreground: #f3bdbd;
 
-  --border: #1e293b;
-  --border-strong: #334155;
-  --ring: #818cf8;
+  --border: #35332b;
+  --border-strong: #4a4740;
+  --rule: #edeae3;
+  --ring: #7fc9a3;
 
-  --chart-bar: #6366f1;
-  --chart-bar-muted: #312e81;
-  --chart-grid: #1e293b;
+  --chart-bar: #2fa377;
+  --chart-bar-quiet: #2a4038;
+  --chart-grid: #35332b;
 
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.45), 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+  --shadow-overlay: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
 
   color-scheme: dark;
 }
 
-/* Expose semantic tokens to Tailwind utilities (bg-card, text-muted-fg, …) */
 @theme inline {
   --color-background: var(--background);
   --color-background-subtle: var(--background-subtle);
@@ -167,9 +147,12 @@
   --color-on-primary: var(--on-primary);
   --color-primary-soft: var(--primary-soft);
   --color-primary-soft-foreground: var(--primary-soft-foreground);
-  --color-study: var(--study);
-  --color-study-soft: var(--study-soft);
-  --color-study-soft-foreground: var(--study-soft-foreground);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-foreground: var(--accent-soft-foreground);
+  --color-study: var(--primary);
+  --color-study-soft: var(--primary-soft);
+  --color-study-soft-foreground: var(--primary-soft-foreground);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-success-soft-foreground: var(--success-soft-foreground);
@@ -181,9 +164,10 @@
   --color-destructive-soft-foreground: var(--destructive-soft-foreground);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-rule: var(--rule);
   --color-ring: var(--ring);
   --color-chart-bar: var(--chart-bar);
-  --color-chart-bar-muted: var(--chart-bar-muted);
+  --color-chart-bar-quiet: var(--chart-bar-quiet);
   --color-chart-grid: var(--chart-grid);
 }
 
@@ -203,73 +187,100 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    /* Body text stays at 16px minimum — avoids iOS auto-zoom on inputs. */
     font-size: 1rem;
     line-height: 1.6;
   }
 
-  /* Visible focus on every interactive control (WCAG 2.2 / skill §1). */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
   :focus:not(:focus-visible) {
     outline: none;
   }
 
-  h1, h2, h3, h4 {
-    line-height: 1.15;
-    letter-spacing: -0.022em;
-    font-weight: 700;
+  /* Display type is the serif. Tight, dark, confident — the hierarchy
+     comes from the typeface change, not from piling on weight. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
     text-wrap: balance;
+  }
+  h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
   }
 
   p {
     text-wrap: pretty;
   }
 
-  /* URLs, IDs and user content reflow instead of overflowing. */
-  .break-anywhere {
-    overflow-wrap: anywhere;
-  }
-
-  /* Tabular figures for counts, timers and data columns. */
-  .tabular {
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Anchor targets clear the sticky header instead of hiding beneath it. */
   [id] {
     scroll-margin-top: 5rem;
   }
 }
 
 @layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
   .container-page {
     width: 100%;
     margin-inline: auto;
-    max-width: 80rem;
+    max-width: 78rem;
     padding-inline: 1.25rem;
   }
   @media (min-width: 768px) {
     .container-page { padding-inline: 2rem; }
   }
   @media (min-width: 1280px) {
-    .container-page { padding-inline: 2.5rem; }
+    .container-page { padding-inline: 3rem; }
   }
 
+  /* Flat surface with a hairline. No shadow — see the note at the top. */
   .card-surface {
     background-color: var(--card);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
   }
 
-  /* Entrance animation — opacity/transform only, never layout properties. */
+  /* Small caps label. Replaces the coloured uppercase eyebrow. */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Old-style figures inside running prose; lining figures for data. */
+  .figures-display {
+    font-family: var(--font-display);
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .break-anywhere {
+    overflow-wrap: anywhere;
+  }
+
+  .rule-top {
+    border-top: 1px solid var(--border);
+  }
+
   .reveal {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
     animation: reveal-in var(--dur-slow) var(--ease-out-soft) forwards;
   }
 }
@@ -279,7 +290,7 @@
 }
 
 @keyframes card-flip-in {
-  from { opacity: 0; transform: rotateX(-8deg) translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
 }
 
@@ -287,7 +298,6 @@
   animation: card-flip-in var(--dur-base) var(--ease-out-soft);
 }
 
-/* Honour the OS reduced-motion setting across the whole product. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {

@@ -32,9 +32,9 @@ export function SiteFooter() {
       <div className="container-page py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-[1.5fr_repeat(3,1fr)]">
           <div>
-            <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
+            <Link href="/" className="flex items-center gap-2.5">
               <Logo />
-              <span>Revly</span>
+              <span className="font-display text-xl">Revly</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
               Everything a GCSE or A-Level student needs to revise, in one
@@ -44,7 +44,7 @@ export function SiteFooter() {
 
           {GROUPS.map((group) => (
             <nav key={group.title} aria-label={group.title}>
-              <h3 className="text-sm font-semibold">{group.title}</h3>
+              <h3 className="eyebrow">{group.title}</h3>
               <ul className="mt-4 space-y-3">
                 {group.links.map((link) => (
                   <li key={link.href + link.label}>

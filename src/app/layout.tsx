@@ -1,13 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Newsreader, Public_Sans } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { THEME_SCRIPT } from "@/components/theme-toggle";
 import "./globals.css";
 
-const inter = Inter({
+/* Display serif — editorial authority at large sizes. */
+const newsreader = Newsreader({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-newsreader",
+  display: "swap",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+});
+
+/* UI grotesque — neutral and institutional, deliberately not Inter. */
+const publicSans = Public_Sans({
+  subsets: ["latin"],
+  variable: "--font-public-sans",
   display: "swap",
 });
 
@@ -43,8 +53,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Zoom is never disabled — maximumScale and userScalable stay at defaults.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#090e1a" },
+    { media: "(prefers-color-scheme: light)", color: "#faf8f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#171612" },
   ],
 };
 
@@ -54,14 +64,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en-GB" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="en-GB"
+      className={`${publicSans.variable} ${newsreader.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="min-h-dvh flex flex-col">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-3 focus:text-on-primary focus:font-semibold"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-on-primary focus:font-semibold"
         >
           Skip to main content
         </a>

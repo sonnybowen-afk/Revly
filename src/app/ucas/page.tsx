@@ -180,11 +180,9 @@ export default function UcasPage() {
               <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
                 {q.guidance}
               </p>
-              <div className="mt-5 rounded-xl bg-destructive-soft p-3.5">
-                <p className="text-xs font-bold text-destructive-soft-foreground">
-                  Avoid
-                </p>
-                <p className="mt-1 text-sm text-destructive-soft-foreground">
+              <div className="mt-6 border-l-2 border-destructive/60 py-0.5 pl-4">
+                <p className="eyebrow text-destructive">Avoid</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                   {q.avoid}
                 </p>
               </div>

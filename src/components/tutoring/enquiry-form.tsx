@@ -104,7 +104,7 @@ export function EnquiryForm() {
         role="status"
         className="card-surface flex flex-col items-center p-8 text-center md:p-12"
       >
-        <span className="grid size-14 place-items-center rounded-2xl bg-success-soft text-success">
+        <span className="grid size-14 place-items-center rounded-[4px] border border-primary/30 text-primary">
           <CheckCircle2 className="size-7" aria-hidden="true" />
         </span>
         <h3 className="mt-5 text-xl font-bold">Enquiry ready to send</h3>
@@ -147,9 +147,9 @@ export function EnquiryForm() {
           ref={summaryRef}
           tabIndex={-1}
           role="alert"
-          className="mt-6 rounded-xl border border-destructive/35 bg-destructive-soft p-4"
+          className="mt-6 border-l-2 border-destructive py-1 pl-4"
         >
-          <p className="flex items-center gap-2 font-bold text-destructive-soft-foreground">
+          <p className="flex items-center gap-2 font-semibold text-destructive">
             <AlertCircle className="size-4" aria-hidden="true" />
             There {errorList.length === 1 ? "is 1 problem" : `are ${errorList.length} problems`} with this form
           </p>
@@ -158,7 +158,7 @@ export function EnquiryForm() {
               <li key={key}>
                 <a
                   href={`#field-${key}`}
-                  className="text-sm font-medium text-destructive-soft-foreground underline underline-offset-2"
+                  className="text-sm text-destructive underline underline-offset-2"
                 >
                   {errors[key]}
                 </a>

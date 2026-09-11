@@ -40,35 +40,21 @@ export function Testimonials() {
         eyebrow="Social proof"
         title="What students say"
         description="Replace these placeholders with real, attributable quotes before you launch."
-        align="center"
       />
 
-      <ul className="mx-auto mt-12 grid max-w-6xl gap-4 md:grid-cols-3 md:gap-6">
+      <ul className="mt-12 grid gap-10 border-t border-border pt-10 md:grid-cols-3 md:gap-8">
         {PLACEHOLDER_QUOTES.map((item, i) => (
-          <li key={i} className="card-surface flex flex-col p-6 md:p-7">
+          <li key={i} className="flex flex-col">
             <Quote
               aria-hidden="true"
-              className="size-7 text-border-strong"
+              className="size-5 text-border-strong"
             />
-            <blockquote className="mt-4 flex-1 text-base leading-relaxed">
+            <blockquote className="mt-4 flex-1 font-display text-lg leading-snug">
               {item.quote}
             </blockquote>
-            <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
-              {/* Neutral monogram stands in for a real photo. */}
-              <span
-                aria-hidden="true"
-                className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-sm font-bold text-muted-foreground"
-              >
-                {item.name.charAt(0)}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold">
-                  {item.name}
-                </span>
-                <span className="block truncate text-sm text-muted-foreground">
-                  {item.detail}
-                </span>
-              </span>
+            <figcaption className="mt-6 text-sm">
+              <span className="block font-semibold">{item.name}</span>
+              <span className="block text-muted-foreground">{item.detail}</span>
             </figcaption>
           </li>
         ))}

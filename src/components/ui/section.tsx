@@ -11,12 +11,17 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className={cn("py-14 md:py-24", className)}>
+    <section id={id} className={cn("py-16 md:py-28", className)}>
       <div className="container-page">{children}</div>
     </section>
   );
 }
 
+/**
+ * Editorial section head: a full-width hairline, a small-caps label sitting
+ * on it, then the serif title. The rule does the work that a coloured
+ * eyebrow used to do, and costs no colour.
+ */
 export function SectionHeading({
   eyebrow,
   title,
@@ -28,23 +33,37 @@ export function SectionHeading({
   description?: string;
   align?: "left" | "center";
 }) {
+  const centered = align === "center";
   return (
-    <div
-      className={cn(
-        "max-w-2xl",
-        align === "center" && "mx-auto text-center",
-      )}
-    >
+    <div className={cn(centered && "text-center")}>
       {eyebrow ? (
-        <p className="mb-3 text-sm font-semibold tracking-wide text-primary uppercase">
-          {eyebrow}
-        </p>
+        <div
+          className={cn(
+            "flex items-center gap-4 border-t border-rule/25 pt-4",
+            centered && "justify-center",
+          )}
+        >
+          <span className="eyebrow">{eyebrow}</span>
+        </div>
       ) : null}
-      <h2 className="text-3xl md:text-4xl font-bold max-w-[22ch]">
+
+      <h2
+        className={cn(
+          "mt-5 font-display text-[2rem] leading-[1.06] md:text-[2.75rem]",
+          "max-w-[20ch]",
+          centered && "mx-auto",
+        )}
+      >
         {title}
       </h2>
+
       {description ? (
-        <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-[68ch]">
+        <p
+          className={cn(
+            "mt-5 max-w-[62ch] text-base leading-relaxed text-muted-foreground md:text-[1.0625rem]",
+            centered && "mx-auto",
+          )}
+        >
           {description}
         </p>
       ) : null}

@@ -4,12 +4,12 @@ import type { ReactNode } from "react";
 type Tone = "neutral" | "brand" | "study" | "success" | "warning" | "danger";
 
 const TONES: Record<Tone, string> = {
-  neutral: "bg-muted text-muted-foreground",
-  brand: "bg-primary-soft text-primary-soft-foreground",
-  study: "bg-study-soft text-study-soft-foreground",
-  success: "bg-success-soft text-success-soft-foreground",
-  warning: "bg-warning-soft text-warning-soft-foreground",
-  danger: "bg-destructive-soft text-destructive-soft-foreground",
+  neutral: "border-border-strong text-muted-foreground",
+  brand: "border-primary/35 text-primary",
+  study: "border-primary/35 text-primary",
+  success: "border-success/40 text-success",
+  warning: "border-warning/40 text-warning",
+  danger: "border-destructive/40 text-destructive",
 };
 
 export function Badge({
@@ -24,7 +24,8 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+        "inline-flex items-center gap-1.5 rounded-[3px] border px-2 py-0.5",
+        "text-[0.6875rem] font-semibold uppercase tracking-[0.08em]",
         // Labels wrap rather than truncate, and long tokens reflow.
         "max-w-full [overflow-wrap:anywhere]",
         TONES[tone],
