@@ -21,7 +21,8 @@ const GROUPS: { title: string; links: { href: string; label: string }[] }[] = [
     title: "Next steps",
     links: [
       { href: "/ucas", label: "UCAS guidance" },
-      { href: "/ucas#personal-statement", label: "Personal statement" },
+      { href: "/ucas/review", label: "Statement checker" },
+      { href: "/pricing", label: "Pricing" },
     ],
   },
 ];

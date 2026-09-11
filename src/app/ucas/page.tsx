@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CheckCircle2, ExternalLink } from "lucide-react";
 import { Section, SectionHeading } from "@/components/ui/section";
 import {
@@ -8,6 +9,8 @@ import {
   Timeline,
 } from "@/components/ui/page";
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { UCAS_PRODUCTS, formatPrice } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "UCAS help",
@@ -214,6 +217,67 @@ export default function UcasPage() {
             UCAS screens every statement for similarity and for generated text.
             A flagged statement goes to the universities you applied to.
           </p>
+        </div>
+      </Section>
+
+      {/* ── Tuition ─────────────────────────────────────────────── */}
+      <Section id="tuition" className="border-b border-border scroll-mt-20">
+        <SectionHeading
+          eyebrow="UCAS tuition"
+          title="Three ways to get help with the application"
+          description="Work through it yourself, have a specialist read your draft, or sit down with someone who has been through admissions for your subject."
+        />
+
+        <div className="mt-10 max-w-2xl">
+          <Callout title="Start with the free checker">
+            <p>
+              Before paying for anything, run your draft through the{" "}
+              <Link
+                href="/ucas/review"
+                className="font-semibold underline underline-offset-2"
+              >
+                statement checker
+              </Link>
+              . It catches the structural faults — a named university, a
+              cliché opening, claims with no evidence behind them — in
+              seconds, and it is free with no limit.
+            </p>
+          </Callout>
+        </div>
+
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-[6px] border border-border bg-border lg:grid-cols-3">
+          {UCAS_PRODUCTS.map((p) => (
+            <li key={p.id} className="flex flex-col bg-card p-7 md:p-8">
+              <h3 className="font-display text-xl">{p.name}</h3>
+              <p className="mt-3 flex items-baseline gap-1.5">
+                {p.from ? (
+                  <span className="text-sm text-muted-foreground">from</span>
+                ) : null}
+                <span className="figures-display text-3xl">
+                  {formatPrice(p.price)}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {p.interval === "hour" ? "/ hour" : "one-off"}
+                </span>
+              </p>
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                {p.summary}
+              </p>
+              <p className="mt-4 border-l-2 border-border pl-3 text-sm">
+                <span className="font-semibold">Best for. </span>
+                {p.bestFor}
+              </p>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href="/ucas/review" size="lg">
+            Run the free checker
+          </ButtonLink>
+          <ButtonLink href="/pricing" variant="secondary" size="lg">
+            See all pricing
+          </ButtonLink>
         </div>
       </Section>
 
