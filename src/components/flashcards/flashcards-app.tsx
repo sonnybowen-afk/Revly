@@ -171,7 +171,7 @@ function StatTile({
 }) {
   return (
     <div className="card-surface flex items-center gap-4 p-5">
-      <span className={`grid size-11 shrink-0 place-items-center rounded-xl bg-muted ${tone}`}>
+      <span className={`grid size-10 shrink-0 place-items-center rounded-[4px] border border-border text-primary ${tone}`}>
         <Icon className="size-5" aria-hidden="true" />
       </span>
       <div className="min-w-0">

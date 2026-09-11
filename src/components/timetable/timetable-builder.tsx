@@ -119,7 +119,7 @@ export function TimetableBuilder() {
               return (
                 <li
                   key={subject.id}
-                  className="rounded-xl border border-border p-4"
+                  className="rounded-md border border-border p-4"
                 >
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
@@ -283,13 +283,13 @@ export function TimetableBuilder() {
         {result && result.warnings.length > 0 ? (
           <div
             role="status"
-            className="flex gap-3 rounded-xl border border-warning/30 bg-warning-soft p-4"
+            className="flex gap-3 border-l-2 border-accent py-1 pl-4"
           >
             <AlertTriangle
-              className="mt-0.5 size-5 shrink-0 text-warning"
+              className="mt-0.5 size-4 shrink-0 text-accent"
               aria-hidden="true"
             />
-            <ul className="space-y-1 text-sm text-warning-soft-foreground">
+            <ul className="space-y-1 text-sm text-muted-foreground">
               {result.warnings.map((w) => (
                 <li key={w}>{w}</li>
               ))}
@@ -313,7 +313,7 @@ export function TimetableBuilder() {
                 {DAYS.map((day) => (
                   <div
                     key={day}
-                    className="rounded-xl border border-border bg-background-subtle p-3"
+                    className="rounded-md border border-border bg-background-subtle p-3"
                   >
                     <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                       {day.slice(0, 3)}

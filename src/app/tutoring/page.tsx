@@ -138,7 +138,7 @@ export default function TutoringPage() {
               >
                 {i + 1}
               </span>
-              <span className="grid size-11 place-items-center rounded-xl bg-study-soft text-study">
+              <span className="grid size-10 place-items-center rounded-[4px] border border-border text-primary">
                 <step.Icon className="size-5" aria-hidden="true" />
               </span>
               <h3 className="mt-5 text-lg font-bold">{step.title}</h3>
@@ -227,7 +227,7 @@ export default function TutoringPage() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16 lg:items-start">
           <div>
-            <span className="grid size-11 place-items-center rounded-xl bg-success-soft text-success">
+            <span className="grid size-10 place-items-center rounded-[4px] border border-border text-primary">
               <ShieldCheck className="size-5" aria-hidden="true" />
             </span>
             <h2 className="mt-5 text-3xl font-bold">Safeguarding first</h2>

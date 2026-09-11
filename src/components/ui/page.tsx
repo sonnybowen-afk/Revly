@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ChevronRight, Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -16,49 +15,59 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="border-b border-border bg-background-subtle">
-      <div className="container-page py-12 md:py-16">
+    <header className="border-b border-border">
+      <div className="container-page py-14 md:py-20">
         <div className="max-w-3xl">
-          {eyebrow ? <Badge tone="brand">{eyebrow}</Badge> : null}
-          <h1 className="mt-4 text-3xl font-bold md:text-5xl max-w-[18ch]">
+          {eyebrow ? (
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-rule/40" aria-hidden="true" />
+              <span className="eyebrow">{eyebrow}</span>
+            </div>
+          ) : null}
+          <h1 className="mt-6 max-w-[16ch] font-display text-[2.5rem] leading-[1.03] tracking-[-0.02em] md:text-[3.75rem]">
             {title}
           </h1>
-          <p className="mt-5 text-lg text-muted-foreground md:text-xl">
+          <p className="mt-6 max-w-[58ch] text-lg leading-relaxed text-muted-foreground md:text-xl">
             {description}
           </p>
-          {children ? <div className="mt-8">{children}</div> : null}
+          {children ? <div className="mt-9">{children}</div> : null}
         </div>
       </div>
     </header>
   );
 }
 
-/** A numbered vertical timeline — used for UCAS stages and NEA phases. */
+/** Numbered stages, ruled rather than dotted. */
 export function Timeline({
   items,
 }: {
   items: { title: string; meta?: string; body: ReactNode }[];
 }) {
   return (
-    <ol className="relative space-y-8 border-l-2 border-border pl-8">
+    <ol className="divide-y divide-border border-y border-border">
       {items.map((item, i) => (
-        <li key={item.title} className="relative">
+        <li
+          key={item.title}
+          className="grid gap-x-6 gap-y-2 py-7 sm:grid-cols-[3.5rem_1fr]"
+        >
           <span
             aria-hidden="true"
-            className="tabular absolute -left-[2.6rem] grid size-8 place-items-center rounded-full border-2 border-border bg-card text-sm font-bold"
+            className="figures-display text-2xl text-muted-foreground"
           >
-            {i + 1}
+            {String(i + 1).padStart(2, "0")}
           </span>
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h3 className="text-lg font-bold">{item.title}</h3>
-            {item.meta ? (
-              <span className="text-sm font-semibold text-primary">
-                {item.meta}
-              </span>
-            ) : null}
-          </div>
-          <div className="mt-2 text-muted-foreground leading-relaxed">
-            {item.body}
+          <div>
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h3 className="font-display text-xl leading-tight">
+                {item.title}
+              </h3>
+              {item.meta ? (
+                <span className="eyebrow text-primary">{item.meta}</span>
+              ) : null}
+            </div>
+            <div className="mt-2.5 max-w-[68ch] leading-relaxed text-muted-foreground">
+              {item.body}
+            </div>
           </div>
         </li>
       ))}
@@ -66,6 +75,7 @@ export function Timeline({
   );
 }
 
+/** A marginal note: carried on a left rule, not inside a tinted box. */
 export function Callout({
   tone = "info",
   title,
@@ -79,52 +89,42 @@ export function Callout({
   return (
     <div
       className={cn(
-        "flex gap-4 rounded-xl border p-5",
-        warning
-          ? "border-warning/30 bg-warning-soft"
-          : "border-primary/25 bg-primary-soft",
+        "flex gap-4 border-l-2 py-1 pl-5",
+        warning ? "border-warning" : "border-primary",
       )}
     >
       <Info
         aria-hidden="true"
         className={cn(
-          "mt-0.5 size-5 shrink-0",
+          "mt-1 size-4 shrink-0",
           warning ? "text-warning" : "text-primary",
         )}
       />
-      <div
-        className={cn(
-          "min-w-0 text-sm leading-relaxed",
-          warning
-            ? "text-warning-soft-foreground"
-            : "text-primary-soft-foreground",
-        )}
-      >
-        <p className="font-bold">{title}</p>
-        <div className="mt-1.5 space-y-2">{children}</div>
+      <div className="min-w-0 text-sm leading-relaxed text-muted-foreground">
+        <p className="font-semibold text-foreground">{title}</p>
+        <div className="mt-2 space-y-2">{children}</div>
       </div>
     </div>
   );
 }
 
-/** Native disclosure — keyboard accessible with no JS and no focus traps. */
 export function FAQ({
   items,
 }: {
   items: { question: string; answer: ReactNode }[];
 }) {
   return (
-    <div className="divide-y divide-border rounded-card border border-card-border bg-card">
+    <div className="divide-y divide-border border-y border-border">
       {items.map((item) => (
         <details key={item.question} className="group">
-          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 p-5 font-semibold [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-5 font-display text-lg [&::-webkit-details-marker]:hidden">
             {item.question}
             <ChevronRight
               aria-hidden="true"
-              className="size-5 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+              className="size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-open:rotate-90"
             />
           </summary>
-          <div className="px-5 pb-5 text-muted-foreground leading-relaxed">
+          <div className="max-w-[70ch] pb-6 leading-relaxed text-muted-foreground">
             {item.answer}
           </div>
         </details>
@@ -148,12 +148,10 @@ export function LinkCard({
 }) {
   const content = (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="font-bold">{title}</h3>
+      <div className="flex items-baseline justify-between gap-4">
+        <h3 className="font-display text-lg">{title}</h3>
         {meta ? (
-          <span className="shrink-0 text-xs font-semibold text-muted-foreground">
-            {meta}
-          </span>
+          <span className="shrink-0 text-xs text-muted-foreground">{meta}</span>
         ) : null}
       </div>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -163,7 +161,7 @@ export function LinkCard({
   );
 
   const className =
-    "card-surface block p-5 transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] motion-reduce:hover:translate-y-0";
+    "block bg-card p-6 transition-colors duration-150 hover:bg-muted";
 
   if (external) {
     return (

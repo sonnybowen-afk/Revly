@@ -130,7 +130,7 @@ export default function RevisionPage() {
         <ul className="mt-10 grid gap-4 md:grid-cols-3">
           {TOOLS.map((tool) => (
             <li key={tool.href} className="card-surface flex flex-col p-6">
-              <span className="grid size-11 place-items-center rounded-xl bg-primary-soft text-primary-soft-foreground">
+              <span className="grid size-10 place-items-center rounded-[4px] border border-border text-primary">
                 <tool.Icon className="size-5" aria-hidden="true" />
               </span>
               <h3 className="mt-5 text-lg font-bold">{tool.title}</h3>
@@ -159,7 +159,7 @@ export default function RevisionPage() {
         <ul className="mt-10 grid gap-4 md:grid-cols-2">
           {TECHNIQUES.map((t) => (
             <li key={t.title} className="card-surface flex gap-4 p-6">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-study-soft text-study">
+              <span className="grid size-10 shrink-0 place-items-center rounded-[4px] border border-border text-primary">
                 <t.Icon className="size-5" aria-hidden="true" />
               </span>
               <div>
@@ -180,9 +180,9 @@ export default function RevisionPage() {
           description="Start with the exam board that actually sets your paper. Their mark schemes and examiner reports tell you precisely how marks are awarded."
         />
 
-        <ul className="mt-10 grid gap-4 md:grid-cols-2">
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-[6px] border border-border bg-border md:grid-cols-2">
           {EXAM_BOARDS.map((board) => (
-            <li key={board.title}>
+            <li key={board.title} className="bg-card">
               <LinkCard
                 href={board.href}
                 title={board.title}

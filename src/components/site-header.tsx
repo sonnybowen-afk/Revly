@@ -42,14 +42,11 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-sm">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 font-bold text-lg tracking-tight"
-        >
+        <Link href="/" className="flex items-center gap-2.5">
           <Logo />
-          <span>Revly</span>
+          <span className="font-display text-xl tracking-[-0.01em]">Revly</span>
         </Link>
 
         <nav aria-label="Main" className="hidden lg:flex items-center gap-1">
@@ -61,9 +58,9 @@ export function SiteHeader() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200",
+                  "relative px-3 py-2 text-sm transition-colors duration-150",
                   active
-                    ? "text-primary"
+                    ? "font-semibold text-foreground"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -71,7 +68,7 @@ export function SiteHeader() {
                 {active ? (
                   <span
                     aria-hidden="true"
-                    className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary"
+                    className="absolute inset-x-3 -bottom-[13px] h-px bg-foreground"
                   />
                 ) : null}
               </Link>
@@ -92,7 +89,7 @@ export function SiteHeader() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="grid size-11 place-items-center rounded-xl border border-border cursor-pointer lg:hidden"
+            className="grid size-11 cursor-pointer place-items-center rounded-md border border-border lg:hidden"
           >
             {open ? (
               <X className="size-5" aria-hidden="true" />
@@ -117,9 +114,9 @@ export function SiteHeader() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex min-h-12 items-center rounded-xl px-4 text-base font-medium",
+                    "flex min-h-12 items-center rounded-md px-4 text-base",
                     active
-                      ? "bg-primary-soft text-primary-soft-foreground"
+                      ? "bg-muted font-semibold text-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
@@ -145,7 +142,7 @@ export function Logo({ className }: { className?: string }) {
     <span
       aria-hidden="true"
       className={cn(
-        "grid size-8 shrink-0 place-items-center rounded-lg bg-primary text-on-primary",
+        "grid size-8 shrink-0 place-items-center rounded-[4px] bg-primary text-on-primary",
         className,
       )}
     >
