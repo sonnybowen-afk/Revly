@@ -74,9 +74,9 @@ export const REVIEWS: readonly Review[] = [
     id: "sample-4",
     author: "Sample review",
     rating: 5,
-    body: "Placeholder row — replace with a real review mentioning a sew-in weave.",
+    body: "Placeholder row — replace with a real review mentioning a mini-tip set.",
     date: "2026-05-30",
-    methodId: "sew-in-weave",
+    methodId: "mini-tip",
     source: "Sample",
   },
   {

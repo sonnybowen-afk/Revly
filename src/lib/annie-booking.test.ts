@@ -106,6 +106,18 @@ describe("validate", () => {
   it("only accepts a method Annie actually fits", () => {
     assert.deepEqual(validate(draft({ methodId: "nano-rings" })), {});
     assert.ok(validate(draft({ methodId: "hot-fusion" })).methodId);
+    // Sew-in weave came off the catalogue with the real price list.
+    assert.ok(validate(draft({ methodId: "sew-in-weave" })).methodId);
+  });
+
+  it("rejects an amount with no method to count it in", () => {
+    assert.ok(validate(draft({ methodId: "", quantity: 150 })).quantity);
+  });
+
+  it("rejects an amount the method does not offer", () => {
+    assert.deepEqual(validate(draft({ methodId: "tape-in", quantity: 2 })), {});
+    // Tape is sold by the pack; 150 is a piece count.
+    assert.ok(validate(draft({ methodId: "tape-in", quantity: 150 })).quantity);
   });
 });
 
@@ -128,7 +140,7 @@ describe("completeness", () => {
 
   it("rises as fields are filled", () => {
     const partial = completeness(draft());
-    const more = completeness(draft({ methodId: "tape-in", volume: "full" }));
+    const more = completeness(draft({ methodId: "tape-in", quantity: 2 }));
     assert.ok(more > partial);
   });
 
@@ -137,8 +149,7 @@ describe("completeness", () => {
       completeness(
         draft({
           methodId: "tape-in",
-          volume: "full",
-          length: 20,
+          quantity: 2,
           preferredDay: "Thursday",
         }),
       ),
@@ -166,13 +177,18 @@ describe("composeMessage", () => {
     assert.match(message, /Phone: 07428132392/);
   });
 
-  it("names the method, volume and length when chosen", () => {
-    const message = composeMessage(
-      draft({ methodId: "nano-rings", volume: "mega", length: 22 }),
-    );
+  it("names the method and the amount, and quotes the list price back", () => {
+    const message = composeMessage(draft({ methodId: "nano-rings", quantity: 150 }));
     assert.match(message, /Method: Nano Rings/);
-    assert.match(message, /Volume: Mega volume/);
-    assert.match(message, /Length: 22 inches/);
+    assert.match(message, /Amount: 150 pieces \(full head\)/);
+    // The printed full-head rate, not 150 × £1.
+    assert.match(message, /Price list: £125/);
+  });
+
+  it("does not call a part set a full head", () => {
+    const message = composeMessage(draft({ methodId: "nano-rings", quantity: 50 }));
+    assert.match(message, /Amount: 50 pieces$/m);
+    assert.match(message, /Price list: £50/);
   });
 
   it("says so when the visitor wants advice rather than a method", () => {
@@ -181,10 +197,11 @@ describe("composeMessage", () => {
 
   it("leaves the fitting detail out of a consultation request", () => {
     const message = composeMessage(
-      draft({ consultationOnly: true, methodId: "nano-rings", volume: "full" }),
+      draft({ consultationOnly: true, methodId: "nano-rings", quantity: 150 }),
     );
     assert.equal(/Method:/.test(message), false);
-    assert.equal(/Volume:/.test(message), false);
+    assert.equal(/Amount:/.test(message), false);
+    assert.equal(/Price list:/.test(message), false);
   });
 
   it("appends free-text notes last", () => {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Check, Clock, RefreshCw, Sparkles, X } from "lucide-react";
 import { Atmosphere } from "@/components/annie/atmosphere";
 import { BreadcrumbJsonLd } from "@/components/annie/json-ld";
-import { PriceEstimator } from "@/components/annie/price-estimator";
+import { PriceCalculator } from "@/components/annie/price-estimator";
 import { Reveal } from "@/components/annie/reveal";
 import {
   AnnieHeading,
@@ -13,12 +13,17 @@ import {
 import type { PhotoId } from "@/lib/annie-photos";
 import { HAIR_TYPE_LABELS, METHODS } from "@/lib/annie-methods";
 import type { HairType } from "@/lib/annie-methods";
-import { formatDurationRange } from "@/lib/annie-pricing";
+import {
+  formatDurationRange,
+  formatGbp,
+  quantityLabel,
+  unitRateLabel,
+} from "@/lib/annie-pricing";
 
 export const metadata: Metadata = {
   title: "Services & prices",
   description:
-    "LA weave, nano rings, micro rings, tape-in wefts and sew-in weaves in Manchester. How each method works, who it suits, how long it takes and what it costs across a full year.",
+    "La weave, nano rings, micro rings, mini-tip and tape hair extensions in Manchester. How each method works, who it suits, how long it takes, and the studio's own prices in full — a full head from £45.",
 };
 
 const HAIR_TYPES: readonly HairType[] = ["fine", "medium", "thick", "textured"];
@@ -40,15 +45,15 @@ export default function ServicesPage() {
             as="h1"
             label="Services"
             title="Five methods, and the truth about each one"
-            lede="What the fitting involves, whose hair it suits, how often you will be back, and what the whole first year costs — not just the headline."
+            lede="What the fitting involves, whose hair it suits, how often you will be back, and exactly what it costs — the studio's own prices, in full."
           />
           <Reveal delay={140}>
             <div className="mt-10 flex flex-wrap gap-4">
               <AnnieLink href="/annie/hair-match" arrow>
                 Find my method
               </AnnieLink>
-              <AnnieLink href="#estimator" tone="outline">
-                Work out the cost
+              <AnnieLink href="#prices" tone="outline">
+                See the prices
               </AnnieLink>
             </div>
           </Reveal>
@@ -94,8 +99,11 @@ export default function ServicesPage() {
                   <th scope="col" className="annie-label px-3 py-4 text-right">
                     Move-ups
                   </th>
-                  <th scope="col" className="annie-label py-4 pl-3 text-right">
+                  <th scope="col" className="annie-label px-3 py-4 text-right">
                     Hair lasts
+                  </th>
+                  <th scope="col" className="annie-label py-4 pl-3 text-right">
+                    Full head
                   </th>
                 </tr>
               </thead>
@@ -143,8 +151,11 @@ export default function ServicesPage() {
                     <td className="font-technical px-3 py-5 text-right text-muted-foreground">
                       {method.maintenanceWeeks[0]}&ndash;{method.maintenanceWeeks[1]} wks
                     </td>
-                    <td className="font-technical py-5 pl-3 text-right text-muted-foreground">
+                    <td className="font-technical px-3 py-5 text-right text-muted-foreground">
                       {method.hairLifeMonths[0]}&ndash;{method.hairLifeMonths[1]} mths
+                    </td>
+                    <td className="font-technical py-5 pl-3 text-right whitespace-nowrap text-primary">
+                      {formatGbp(method.price.fullHead)}
                     </td>
                   </tr>
                 ))}
@@ -167,11 +178,7 @@ export default function ServicesPage() {
                   <Reveal>
                     <p className="annie-label">
                       {String(i + 1).padStart(2, "0")} &middot;{" "}
-                      {method.budget === "value"
-                        ? "Value"
-                        : method.budget === "mid"
-                          ? "Mid range"
-                          : "Premium"}
+                      {unitRateLabel(method)}
                     </p>
                     <h2 className="mt-4 font-display text-[2rem] leading-tight md:text-[2.75rem]">
                       {method.name}
@@ -198,8 +205,8 @@ export default function ServicesPage() {
                       />
                       <Spec
                         icon={Sparkles}
-                        term="Hair lasts"
-                        value={`${method.hairLifeMonths[0]}–${method.hairLifeMonths[1]} months`}
+                        term="Full head"
+                        value={`${quantityLabel(method, method.price.fullHeadQty)} · ${formatGbp(method.price.fullHead)}`}
                       />
                     </dl>
                   </Reveal>
@@ -257,15 +264,15 @@ export default function ServicesPage() {
         </div>
       </AnnieSection>
 
-      <AnnieSection tone="subtle" id="estimator">
+      <AnnieSection tone="subtle" id="prices">
         <AnnieHeading
           label="What it costs"
-          title="The first year, not just the fitting"
-          lede="Extensions get sold on the fitting price and then surprise people with the move-ups. Set the method, the volume and the length, and this shows the whole year at once."
+          title="What it costs"
+          lede="Straight off the studio's own price list. Pick a method and how much you want fitted."
         />
         <Reveal delay={120}>
           <div className="mt-12">
-            <PriceEstimator />
+            <PriceCalculator />
           </div>
         </Reveal>
       </AnnieSection>

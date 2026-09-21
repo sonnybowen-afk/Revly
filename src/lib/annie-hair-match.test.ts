@@ -43,7 +43,8 @@ describe("rankMethods", () => {
   });
 
   it("scores near the ceiling when every axis lines up", () => {
-    // LA Weave on its home ground: thick hair, volume, very active, mid budget.
+    // LA Weave on its home ground: thick hair, volume, very active, and
+    // the cheaper of the two price points — a full head is £45.
     // It cannot reach a literal 100 because no method's move-up midpoint sits
     // exactly on an upkeep target, so the honest ceiling is the high 90s.
     const ranked = rankMethods(
@@ -53,7 +54,7 @@ describe("rankMethods", () => {
         goal: "volume",
         lifestyle: "very-active",
         upkeep: "standard",
-        budget: "mid",
+        budget: "value",
         fragile: false,
       }),
     );
@@ -63,11 +64,10 @@ describe("rankMethods", () => {
 });
 
 describe("hard blocks", () => {
-  it("blocks LA Weave and sew-in on fine hair", () => {
+  it("blocks LA Weave on fine hair", () => {
     const ranked = rankMethods(answers({ hairType: "fine", density: "low" }));
     const blocked = ranked.filter((m) => m.blocked).map((m) => m.method.id);
     assert.ok(blocked.includes("la-weave"));
-    assert.ok(blocked.includes("sew-in-weave"));
   });
 
   it("scores a blocked method 0 and explains why", () => {
@@ -114,7 +114,7 @@ describe("density adjusts the hair-type judgement", () => {
 describe("preferences move the ranking", () => {
   it("prefers nano rings for fragile fine hair", () => {
     const best = topMatch(
-      answers({ hairType: "fine", fragile: true, budget: "premium", upkeep: "minimal" }),
+      answers({ hairType: "fine", fragile: true, budget: "mid", upkeep: "minimal" }),
     );
     assert.equal(best?.method.id, "nano-rings");
   });
@@ -134,12 +134,25 @@ describe("preferences move the ranking", () => {
     assert.ok(score(active, "tape-in") < score(relaxed, "tape-in"));
   });
 
-  it("penalises fragile hair on the least gentle method", () => {
+  it("penalises fragile hair on anything less than the gentlest bond", () => {
     const sturdy = rankMethods(answers({ hairType: "thick", fragile: false }));
     const fragile = rankMethods(answers({ hairType: "thick", fragile: true }));
     const score = (list: ReturnType<typeof rankMethods>, id: string) =>
       list.find((m) => m.method.id === id)?.score ?? 0;
-    assert.ok(score(fragile, "sew-in-weave") < score(sturdy, "sew-in-weave"));
+    // Nano is the only 5/5 for gentleness; everything else takes a hit.
+    assert.ok(score(fragile, "la-weave") < score(sturdy, "la-weave"));
+    assert.equal(score(fragile, "nano-rings"), score(sturdy, "nano-rings"));
+  });
+
+  it("keeps only the methods that are on the price list", () => {
+    const ids = rankMethods(answers()).map((m) => m.method.id).sort();
+    assert.deepEqual(ids, [
+      "la-weave",
+      "micro-rings",
+      "mini-tip",
+      "nano-rings",
+      "tape-in",
+    ]);
   });
 });
 

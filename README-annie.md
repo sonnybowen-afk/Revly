@@ -13,25 +13,41 @@ system.
 
 ## Before this goes live
 
-Three things are deliberately unfinished, because finishing them would have
-meant inventing facts about a real business. Each one is gated behind a flag
-so the site cannot quietly ship a fiction.
+Prices are now real. Two things remain, and each is gated behind a flag so
+the site cannot quietly ship a fiction.
 
-### 1. Prices — `src/lib/annie-methods.ts`
+### 1. Prices — **done**
 
-Every `guide` and `guideMaintenance` figure is a **placeholder band**. The
-relationships between methods are sensible, but the numbers are not Annie's.
+`PRICING_CONFIRMED` is `true`. Every figure on the site is transcribed
+from the studio's own printed price list:
 
-```
-src/lib/annie-methods.ts     ← replace guide / guideMaintenance per method
-src/lib/annie-pricing.ts     ← then set PRICING_CONFIRMED = true
-```
+| Service | Rate | Full head |
+|---|---|---|
+| LA Weave | £15 per row | 3 rows · **£45** |
+| Nano Ring | £1 per piece | 150 pieces · **£125** |
+| Micro Ring | £1 per piece | 150 pieces · **£125** |
+| Mini-Tip | £1 per piece | 150 pieces · **£125** |
+| Tape Hair Extensions | £25 per pack | 2 packs · **£50** |
+| Extensions take-out | — | £10 |
+| Kim Kardashian braid | — | £20 |
 
-While `PRICING_CONFIRMED` is `false`, the estimator shows a prominent
-"guide figures only" notice and every call to action leads with the free
-consultation rather than a number. Setting it to `true` removes the notice.
-A unit test asserts the flag is still `false`, so flipping it is a
-deliberate act that shows up in a diff.
+Two things worth knowing about how this is modelled:
+
+- **The full-head rate is stored, not computed.** 150 pieces at £1 is
+  £150, but the list prints £125. That is a real bundled rate, so
+  `fullHead` sits alongside `unit` rather than being derived from it, and
+  the calculator shows the difference as a saving.
+- **No maintenance price is invented.** The list does not publish one, so
+  the site says move-ups are quoted at the consultation rather than
+  showing a plausible-looking guess. The old first-year projection is
+  gone with it.
+
+What the list does *not* say is whether the hair itself is included, so
+neither does the site. If it should, add it to `PRICE_NOTE`.
+
+**Sew-in Weave was removed** — it is not on the price list. Mini-Tip took
+its place. Textured hair now routes to the LA Weave in the match finder,
+which genuinely suits it.
 
 ### 2. Reviews — `src/lib/annie-reviews.ts`
 
@@ -56,9 +72,8 @@ manual penalty waiting to happen.
 
 ### 3. Photography — `src/lib/annie-photos.ts`
 
-**13 of 22 slots are filled** with Annie's own photographs, supplied by the
-client from her Instagram and prepared for the web here. Nine remain as
-briefs.
+**20 of 26 slots are filled** with Annie's own photographs, supplied by the
+client from her Instagram and prepared for the web here. Six remain as briefs.
 
 Every image position is a named slot. A slot with an entry in `PHOTOS`
 renders the photograph; a slot without one renders a `PhotoFrame` — a gold
@@ -85,11 +100,14 @@ and the gallery's counter goes up.
 
 | Slot | Shot |
 |---|---|
-| `annie-portrait` | Annie at the chair — the About page leads with it |
-| `shopfront` | The unit inside the market, so people can find it |
 | `detail-bond` | A bond at the root, close enough to show the scale |
 | `detail-colour-match` | A shade held against the client's own ends in daylight |
 | `method-*` (5) | One per method: the bond itself, not a finished head |
+
+There is **no photograph of Annie**, and the client confirmed none exists,
+so the `annie-portrait` slot was removed rather than left as a frame that
+can never be filled. The About page leads with the shopfront instead —
+the sign says most of what a portrait would have.
 
 #### What the photographs are allowed to claim
 
@@ -112,8 +130,7 @@ The originals were phone screenshots of Instagram and two `.mp4` posts.
 For each: the Instagram chrome was cropped off, the side-by-side composites
 were split at the gutter into separate before and after frames, the best
 frames were picked out of the videos, and everything was cropped to a
-common 2:3, resized and saved as progressive JPEG. Thirteen images come to
-1.2 MB in total.
+common 2:3, resized and saved as progressive JPEG. Twenty images come to about 1.8 MB in total.
 
 Instagram's own overlays — the video timer, the mute badge — were cropped
 out. Annie's own watermarks were kept.
@@ -123,26 +140,26 @@ out. Annie's own watermarks were kept.
 | Feature | Where | Notes |
 |---|---|---|
 | Hair match finder | `/annie/hair-match` | Seven questions, scores all five methods 0–100, explains every result and names what it rules out |
-| Cost-of-ownership estimator | `/annie/services#estimator` | Fitting + every move-up across the first year, reduced to a monthly figure, compared across methods |
+| Price calculator | `/annie/services#prices` | The studio's real rates: pick a method and an amount, see the price and how it compares |
 | Before/after sliders | `/annie/gallery`, home | A real `<input type="range">` — keyboard, touch and screen-reader operable |
 | Review wall | `/annie/reviews` | Rating breakdown, filter by stars and by method |
 | Enquiry builder | `/annie/book` | Validates, saves a draft, and composes a finished WhatsApp / SMS / email message |
 | Structured data | everywhere | `HairSalon` with real NAP, hours and services; `FAQPage`; `BreadcrumbList` |
-| Photo manifest | `src/lib/annie-photos.ts` | 22 named slots, 13 filled with Annie's own work; drop a file in and the frame becomes a photograph |
+| Photo manifest | `src/lib/annie-photos.ts` | 26 named slots, 20 filled with Annie's own work; drop a file in and the frame becomes a photograph |
 | Live motion | `src/components/annie/motion.tsx` | Custom cursor, magnetic CTAs, word reveals, parallax, scroll progress, petals |
 
 ### The logic, and its tests
 
 All the decision-making is pure TypeScript with no React in it, tested with
-`node --test`. **96 tests** cover this site.
+`node --test`. **112 tests** cover this site.
 
 ```
 src/lib/annie-salon.ts       Business facts, opening-hours logic   (17 tests)
 src/lib/annie-methods.ts     The five methods                      —
-src/lib/annie-hair-match.ts  Recommendation scoring                (18 tests)
-src/lib/annie-pricing.ts     First-year cost estimator             (16 tests)
-src/lib/annie-reviews.ts     Aggregation and filtering             (19 tests)
-src/lib/annie-booking.ts     Validation and message composition    (30 tests)
+src/lib/annie-hair-match.ts  Recommendation scoring                (19 tests)
+src/lib/annie-pricing.ts     Price calculator, from the real list  (23 tests)
+src/lib/annie-reviews.ts     Aggregation and filtering             (20 tests)
+src/lib/annie-booking.ts     Validation and message composition    (33 tests)
 ```
 
 Every one of them is pure: same input, same output, no clock and no storage.
@@ -247,7 +264,7 @@ root one.
 
 ```bash
 npm run dev          # http://localhost:3000/annie
-npm run test         # 226 tests, 96 of them this site's
+npm run test         # 238 tests, 112 of them this site's
 npm run typecheck
 npm run build
 npm run build:pages  # static export

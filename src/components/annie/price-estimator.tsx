@@ -3,144 +3,174 @@
 import { useMemo, useState } from "react";
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { METHODS, methodById } from "@/lib/annie-methods";
-import type { Length, Volume } from "@/lib/annie-pricing";
+import { EXTRAS, METHODS, methodById } from "@/lib/annie-methods";
 import {
-  LENGTHS,
-  PRICE_DISCLAIMER,
-  PRICING_CONFIRMED,
-  VOLUME_DESCRIPTIONS,
-  VOLUME_LABELS,
-  estimate,
+  MAINTENANCE_NOTE,
+  PRICE_NOTE,
+  PRICE_SOURCE,
   formatDurationRange,
-  formatRange,
+  formatGbp,
+  fullHeadPrice,
+  quantityLabel,
+  quote,
+  unitRateLabel,
 } from "@/lib/annie-pricing";
 import { AnnieLink } from "./ui";
 
-const VOLUMES: readonly Volume[] = ["half", "full", "mega"];
-
 /**
- * What a set actually costs over its first year.
+ * The price calculator.
  *
- * Extensions get sold on the fitting price and then surprise people with
- * the move-ups, so this shows the whole year at once: the fitting, every
- * maintenance visit, and the two reduced to a monthly figure that can be
- * compared across methods honestly.
- *
- * Every figure is a guide until PRICING_CONFIRMED is true, and the panel
- * says so in a place that cannot be missed rather than in small print.
+ * Every figure it shows comes off the studio's printed list: the unit
+ * rate, the full-head rate, and the flat-price extras. It makes no
+ * projection and assumes no maintenance price, because the list does not
+ * publish one — that gets an honest note instead of a plausible guess.
  */
-export function PriceEstimator({ initialMethod }: { initialMethod?: string }) {
+export function PriceCalculator({ initialMethod }: { initialMethod?: string }) {
   const [methodId, setMethodId] = useState(
     initialMethod && methodById(initialMethod) ? initialMethod : METHODS[0].id,
   );
-  const [volume, setVolume] = useState<Volume>("full");
-  const [length, setLength] = useState<Length>(20);
-
   const method = methodById(methodId) ?? METHODS[0];
-  const result = useMemo(
-    () => estimate(method, volume, length),
-    [method, volume, length],
-  );
+  const [quantity, setQuantity] = useState<number>(method.price.fullHeadQty);
 
-  // Scale the comparison bars against the dearest option on screen, so the
-  // shortest bar is never invisible.
-  const ceiling = useMemo(
-    () =>
-      Math.max(
-        ...METHODS.map((m) => estimate(m, volume, length).firstYear[1]),
-      ),
-    [volume, length],
+  // Units differ per method, so a quantity cannot survive a method change.
+  const chooseMethod = (id: string) => {
+    const next = methodById(id);
+    if (!next) return;
+    setMethodId(id);
+    setQuantity(next.price.fullHeadQty);
+  };
+
+  const result = useMemo(() => quote(method, quantity), [method, quantity]);
+  const dearest = useMemo(
+    () => Math.max(...METHODS.map(fullHeadPrice)),
+    [],
   );
 
   return (
     <div className="annie-card p-6 md:p-8">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <div className="space-y-7">
-          <Field label="Method">
+          <fieldset>
+            <legend className="annie-label mb-3">Method</legend>
             <div className="grid gap-2">
               {METHODS.map((m) => (
-                <Choice
-                  key={m.id}
-                  selected={m.id === methodId}
-                  onClick={() => setMethodId(m.id)}
-                  title={m.name}
-                  detail={m.summary}
-                />
-              ))}
-            </div>
-          </Field>
-
-          <Field label="How much hair">
-            <div className="grid gap-2 sm:grid-cols-3">
-              {VOLUMES.map((v) => (
-                <Choice
-                  key={v}
-                  selected={v === volume}
-                  onClick={() => setVolume(v)}
-                  title={VOLUME_LABELS[v]}
-                  detail={VOLUME_DESCRIPTIONS[v]}
-                  compact
-                />
-              ))}
-            </div>
-          </Field>
-
-          <Field label={`Length — ${length} inches`}>
-            <div
-              role="group"
-              aria-label="Hair length in inches"
-              className="flex flex-wrap gap-2"
-            >
-              {LENGTHS.map((inches) => (
                 <button
-                  key={inches}
+                  key={m.id}
                   type="button"
-                  aria-pressed={inches === length}
-                  onClick={() => setLength(inches)}
+                  aria-pressed={m.id === methodId}
+                  onClick={() => chooseMethod(m.id)}
                   className={cn(
-                    "font-technical min-h-11 min-w-14 cursor-pointer rounded-full border px-4 text-sm transition-colors duration-200",
+                    "cursor-pointer rounded-xl border px-4 py-3 text-left transition-colors duration-200",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                    inches === length
+                    m.id === methodId
+                      ? "border-primary bg-primary-soft"
+                      : "border-card-border bg-background-subtle hover:border-primary/40",
+                  )}
+                >
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-medium text-foreground">
+                      {m.name}
+                    </span>
+                    <span className="font-technical text-xs text-primary">
+                      {unitRateLabel(m)}
+                    </span>
+                  </span>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Full head {quantityLabel(m, m.price.fullHeadQty)} &middot;{" "}
+                    {formatGbp(m.price.fullHead)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend className="annie-label mb-3">
+              How many {method.price.unitPlural}
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {method.price.steps.map((step) => (
+                <button
+                  key={step}
+                  type="button"
+                  aria-pressed={step === quantity}
+                  onClick={() => setQuantity(step)}
+                  className={cn(
+                    "font-technical min-h-11 cursor-pointer rounded-full border px-4 text-sm transition-colors duration-200",
+                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                    step === quantity
                       ? "border-primary bg-primary text-on-primary"
                       : "border-card-border text-muted-foreground hover:border-primary/40 hover:text-foreground",
                   )}
                 >
-                  {inches}&Prime;
+                  {step}
+                  {step === method.price.fullHeadQty ? (
+                    <span className="ml-1.5 text-[0.7em]">full head</span>
+                  ) : null}
                 </button>
               ))}
             </div>
-          </Field>
+          </fieldset>
+
+          <div>
+            <p className="annie-label mb-3">Also on the list</p>
+            <ul className="space-y-2">
+              {EXTRAS.map((extra) => (
+                <li
+                  key={extra.id}
+                  className="flex items-baseline justify-between gap-4 border-b border-border pb-2 text-sm"
+                >
+                  <span>
+                    <span className="text-foreground">{extra.name}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {extra.detail}
+                    </span>
+                  </span>
+                  <span className="font-technical shrink-0 text-primary">
+                    {formatGbp(extra.price)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-[var(--gold-hairline)] bg-primary-soft/30 p-6">
-            <p className="annie-label">First year, all in</p>
+          <div className="rounded-xl border border-[var(--gold-hairline)] bg-primary-soft/40 p-6">
+            <p className="annie-label">
+              {method.name} &middot; {quantityLabel(method, quantity)}
+            </p>
             <p
-              className="mt-3 font-display text-[2.5rem] leading-none text-primary md:text-[3.25rem]"
-              /* The whole panel updates together, so announce it once. */
+              className="mt-3 font-display text-[3rem] leading-none text-primary md:text-[3.75rem]"
               aria-live="polite"
               aria-atomic="true"
             >
-              {formatRange(result.firstYear)}
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              About{" "}
-              <span className="font-technical text-foreground">
-                {formatRange(result.monthly)}
-              </span>{" "}
-              a month across twelve months.
+              {formatGbp(result.total)}
             </p>
 
+            {result.saving > 0 ? (
+              <p className="mt-3 text-sm text-muted-foreground">
+                The full-head rate, rather than{" "}
+                <span className="font-technical">
+                  {formatGbp(result.atUnitRate)}
+                </span>{" "}
+                at {unitRateLabel(method)} &mdash; a{" "}
+                <span className="font-technical text-foreground">
+                  {formatGbp(result.saving)}
+                </span>{" "}
+                difference.
+              </p>
+            ) : (
+              <p className="mt-3 text-sm text-muted-foreground">
+                {quantityLabel(method, quantity)} at {unitRateLabel(method)}.
+              </p>
+            )}
+
             <dl className="mt-6 grid gap-4 border-t border-[var(--gold-hairline)] pt-5 text-sm sm:grid-cols-2">
-              <Row term="Fitting" value={formatRange(result.fitting)} />
+              <Row term="Rate" value={unitRateLabel(method)} />
               <Row
-                term="Each move-up"
-                value={formatRange([result.maintenance, result.maintenance])}
-              />
-              <Row
-                term="Move-ups in year one"
-                value={`${result.maintenanceVisits}`}
+                term="Full head"
+                value={`${quantityLabel(method, method.price.fullHeadQty)} · ${formatGbp(method.price.fullHead)}`}
               />
               <Row
                 term="Chair time"
@@ -148,34 +178,29 @@ export function PriceEstimator({ initialMethod }: { initialMethod?: string }) {
               />
               <Row
                 term="Back in every"
-                value={`${result.maintenanceWeeks[0]}–${result.maintenanceWeeks[1]} weeks`}
-              />
-              <Row
-                term="Hair lasts"
-                value={`${method.hairLifeMonths[0]}–${method.hairLifeMonths[1]} months`}
+                value={`${method.maintenanceWeeks[0]}–${method.maintenanceWeeks[1]} weeks`}
               />
             </dl>
           </div>
 
           <div>
-            <p className="annie-label">Against the other methods</p>
+            <p className="annie-label">Full head, method by method</p>
             <ul className="mt-4 space-y-3">
               {METHODS.map((m) => {
-                const other = estimate(m, volume, length);
-                const width = Math.round((other.firstYear[1] / ceiling) * 100);
+                const price = fullHeadPrice(m);
                 const isCurrent = m.id === methodId;
                 return (
                   <li key={m.id}>
                     <div className="flex items-baseline justify-between gap-3 text-sm">
                       <span
-                        className={cn(
-                          isCurrent ? "text-foreground" : "text-muted-foreground",
-                        )}
+                        className={
+                          isCurrent ? "text-foreground" : "text-muted-foreground"
+                        }
                       >
                         {m.name}
                       </span>
                       <span className="font-technical text-xs tabular-nums text-muted-foreground">
-                        {formatRange(other.firstYear)}
+                        {formatGbp(price)}
                       </span>
                     </div>
                     <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
@@ -184,91 +209,38 @@ export function PriceEstimator({ initialMethod }: { initialMethod?: string }) {
                           "h-full rounded-full transition-[width] duration-500 ease-out",
                           isCurrent ? "bg-primary" : "bg-chart-bar-quiet",
                         )}
-                        style={{ width: `${width}%` }}
+                        style={{ width: `${(price / dearest) * 100}%` }}
                       />
                     </div>
                   </li>
                 );
               })}
             </ul>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Bars compare the top of each first-year range at the same
-              volume and length.
-            </p>
+            <p className="mt-3 text-xs text-muted-foreground">{PRICE_SOURCE}</p>
           </div>
         </div>
       </div>
 
-      {!PRICING_CONFIRMED ? (
-        <p className="mt-8 flex items-start gap-3 rounded-xl border border-warning/30 bg-warning-soft p-4 text-sm leading-relaxed text-warning-soft-foreground">
-          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          <span>{PRICE_DISCLAIMER}</span>
+      <div className="mt-8 space-y-3">
+        <p className="flex items-start gap-3 rounded-xl border border-[var(--gold-hairline)] bg-primary-soft/30 p-4 text-sm leading-relaxed">
+          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+          <span>{PRICE_NOTE}</span>
         </p>
-      ) : null}
+        <p className="flex items-start gap-3 rounded-xl border border-border p-4 text-sm leading-relaxed text-muted-foreground">
+          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+          <span>{MAINTENANCE_NOTE}</span>
+        </p>
+      </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <AnnieLink href={`/annie/book?method=${method.id}`} arrow>
-          Get an exact price
+          Book this in
         </AnnieLink>
         <AnnieLink href="/annie/hair-match" tone="outline">
           Not sure which method?
         </AnnieLink>
       </div>
     </div>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <fieldset>
-      <legend className="annie-label mb-3">{label}</legend>
-      {children}
-    </fieldset>
-  );
-}
-
-function Choice({
-  selected,
-  onClick,
-  title,
-  detail,
-  compact = false,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  title: string;
-  detail: string;
-  compact?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      onClick={onClick}
-      className={cn(
-        "cursor-pointer rounded-xl border px-4 py-3 text-left transition-colors duration-200",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        selected
-          ? "border-primary bg-primary-soft"
-          : "border-card-border bg-background-subtle hover:border-primary/40",
-      )}
-    >
-      <span className="block text-sm font-medium text-foreground">{title}</span>
-      <span
-        className={cn(
-          "mt-1 block text-xs leading-relaxed text-muted-foreground",
-          compact && "line-clamp-2",
-        )}
-      >
-        {detail}
-      </span>
-    </button>
   );
 }
 

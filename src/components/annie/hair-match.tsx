@@ -75,11 +75,18 @@ const QUESTIONS: readonly Question[] = [
   {
     key: "budget",
     title: "Where are you on budget?",
-    help: "Nothing here is a quote. It only shifts which method gets suggested first.",
+    help: "The studio's own price list runs from £45 for a full head to £125. This only shifts which method gets suggested first.",
     options: [
-      { value: "value", label: "Keep it sensible", detail: "The best result for the least outlay." },
-      { value: "mid", label: "Somewhere in the middle", detail: "Happy to pay for quality that lasts." },
-      { value: "premium", label: "Whatever it takes", detail: "The finest bond and the best hair, full stop." },
+      {
+        value: "value",
+        label: "As low as it goes",
+        detail: "A full head from £45. The row and pack methods.",
+      },
+      {
+        value: "mid",
+        label: "Happy to pay for the finest bond",
+        detail: "A full head at £125. The strand-by-strand methods.",
+      },
     ],
   },
   {

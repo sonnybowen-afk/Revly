@@ -37,21 +37,22 @@ export const metadata: Metadata = {
     template: `%s · ${SALON.shortName}`,
   },
   description:
-    "Boutique hair extension studio in Manchester Arndale Market. LA weave, nano rings, micro rings, tape-in and sew-in weaves, matched and fitted by Annie. Rated 4.9 from 82 reviews.",
+    "Boutique hair extension studio in Manchester Arndale Market. La weave, nano rings, micro rings, mini-tip and tape hair extensions, matched and fitted by Annie. Walk in, free consultation, a full head from £45. Rated 4.9 from 82 reviews.",
   keywords: [
     "hair extensions Manchester",
     "LA weave Manchester",
     "nano ring extensions",
     "micro ring extensions",
     "tape in extensions Manchester",
-    "sew in weave Manchester",
+    "mini tip extensions Manchester",
+    "weave bar Manchester",
     "Arndale Market hair salon",
     "Russian hair extensions",
   ],
   openGraph: {
     title: `${SALON.name} — ${SALON.tagline}`,
     description:
-      "LA weave, nano rings, micro rings, tape-in and sew-in weaves, fitted by Annie in Manchester Arndale Market.",
+      "La weave, nano rings, micro rings, mini-tip and tape hair extensions, fitted by Annie in Manchester Arndale Market. Walk in, free consultation.",
     type: "website",
     locale: "en_GB",
     siteName: SALON.name,

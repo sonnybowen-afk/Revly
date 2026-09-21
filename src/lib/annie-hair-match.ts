@@ -60,7 +60,9 @@ const WEIGHTS = {
   fragile: 12,
 } as const;
 
-const BUDGET_RANK: Record<Budget, number> = { value: 0, mid: 1, premium: 2 };
+const BUDGET_RANK: Record<Budget, number> = { value: 0, mid: 1 };
+/** With two tiers the widest possible gap is one step. */
+const MAX_BUDGET_GAP = 1;
 
 /** Weeks between move-ups that each upkeep appetite is happy with. */
 const UPKEEP_TARGET_WEEKS: Record<Upkeep, number> = {
@@ -186,7 +188,7 @@ function scoreMethod(method: Method, answers: Answers): Match {
 
   // ── Budget ─────────────────────────────────────────────────────────
   const budgetGap = Math.abs(BUDGET_RANK[method.budget] - BUDGET_RANK[answers.budget]);
-  score += WEIGHTS.budget * clamp01(1 - budgetGap / 2);
+  score += WEIGHTS.budget * clamp01(1 - budgetGap / MAX_BUDGET_GAP);
   if (budgetGap === 0) {
     reasons.push({ kind: "plus", text: "Sits in the budget you picked." });
   } else if (BUDGET_RANK[method.budget] > BUDGET_RANK[answers.budget]) {

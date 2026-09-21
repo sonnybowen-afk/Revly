@@ -101,8 +101,11 @@ export default function AboutPage() {
               </Reveal>
             </div>
 
+            {/* There is no portrait of Annie, and rather than leave an
+                empty frame on the page that introduces her, the unit
+                itself does the introducing — the sign says most of it. */}
             <Reveal direction="zoom" delay={120}>
-              <PhotoFrame id="annie-portrait" ratio="4 / 5" index={1} />
+              <PhotoFrame id="shopfront" ratio="4 / 3" index={1} />
             </Reveal>
           </div>
         </div>

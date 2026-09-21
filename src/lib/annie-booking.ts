@@ -14,8 +14,7 @@
 
 import type { Method } from "./annie-methods.ts";
 import { methodById } from "./annie-methods.ts";
-import type { Length, Volume } from "./annie-pricing.ts";
-import { VOLUME_LABELS } from "./annie-pricing.ts";
+import { quantityLabel, quote, formatGbp } from "./annie-pricing.ts";
 import { SALON } from "./annie-salon.ts";
 
 export type BookingDraft = {
@@ -25,8 +24,12 @@ export type BookingDraft = {
   readonly email: string;
   /** Method id, or "" when they want Annie to advise. */
   readonly methodId: string;
-  readonly volume: Volume | "";
-  readonly length: Length | "";
+  /**
+   * How many rows / pieces / packs, in the chosen method's own unit.
+   * 0 when not yet chosen — the units differ per method, so this only
+   * means anything alongside `methodId`.
+   */
+  readonly quantity: number;
   /** Free text: colour, occasion, dates that suit, anything else. */
   readonly notes: string;
   /** Which day of the week suits, or "" for no preference. */
@@ -39,8 +42,7 @@ export const EMPTY_DRAFT: BookingDraft = {
   phone: "",
   email: "",
   methodId: "",
-  volume: "",
-  length: "",
+  quantity: 0,
   notes: "",
   preferredDay: "",
   consultationOnly: false,
@@ -112,8 +114,16 @@ export function validate(draft: BookingDraft): Errors {
     errors.preferredDay = "The studio is open Monday to Friday.";
   }
 
-  if (draft.methodId && !methodById(draft.methodId)) {
+  const method = draft.methodId ? methodById(draft.methodId) : undefined;
+  if (draft.methodId && !method) {
     errors.methodId = "Pick a method from the list, or leave it to Annie.";
+  }
+  // A quantity is meaningless without the method whose unit it counts.
+  if (draft.quantity > 0 && !method) {
+    errors.quantity = "Pick a method first — the amount is counted in its own units.";
+  }
+  if (method && draft.quantity > 0 && !method.price.steps.includes(draft.quantity)) {
+    errors.quantity = `Pick one of the amounts listed for ${method.name}.`;
   }
 
   return errors;
@@ -129,7 +139,7 @@ export function completeness(draft: BookingDraft): number {
     draft.name.trim().length > 0,
     draft.phone.trim().length > 0 || draft.email.trim().length > 0,
     draft.methodId.length > 0 || draft.consultationOnly,
-    draft.volume.length > 0 || draft.consultationOnly,
+    draft.quantity > 0 || draft.consultationOnly,
     draft.preferredDay.length > 0,
   ].filter(Boolean).length;
   return Math.round((filled / 5) * 100);
@@ -161,8 +171,16 @@ export function composeMessage(draft: BookingDraft): string {
 
   if (!draft.consultationOnly) {
     lines.push(`Method: ${describeMethod(method)}`);
-    if (draft.volume) lines.push(`Volume: ${VOLUME_LABELS[draft.volume]}`);
-    if (draft.length) lines.push(`Length: ${draft.length} inches`);
+    if (method && draft.quantity > 0) {
+      // Quote the price back, so Annie and the client start from the
+      // same number rather than from a half-remembered one.
+      const q = quote(method, draft.quantity);
+      lines.push(
+        `Amount: ${quantityLabel(method, draft.quantity)}` +
+          (q.isFullHead ? " (full head)" : ""),
+      );
+      lines.push(`Price list: ${formatGbp(q.total)}`);
+    }
   }
 
   if (draft.preferredDay) lines.push(`Best day: ${draft.preferredDay}`);

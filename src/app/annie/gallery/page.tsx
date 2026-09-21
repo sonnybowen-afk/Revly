@@ -17,7 +17,7 @@ import { SALON } from "@/lib/annie-salon";
 export const metadata: Metadata = {
   title: "Gallery",
   description:
-    "Before and after transformations from Annie's Secret Hair Extension in Manchester — LA weave, nano rings, tape-in wefts and sew-in weaves, fitted and blended in the studio.",
+    "Before and after transformations from Annie's Secret Hair Extension in Manchester — LA weave, nano rings, micro rings, mini-tip and tape hair extensions, fitted and blended in the studio.",
 };
 
 /**
@@ -55,6 +55,21 @@ const TRANSFORMATIONS = [
     beforeId: "copper-before",
     afterId: "copper-after",
   },
+  {
+    label: "Blonde — length and thickness",
+    beforeId: "salon-blonde-before",
+    afterId: "salon-blonde-after",
+  },
+  {
+    label: "Brunette — bob to past the shoulders",
+    beforeId: "bob-brunette-before",
+    afterId: "bob-brunette-after",
+  },
+  {
+    label: "Ginger — thickness through the ends",
+    beforeId: "ginger-smooth-before",
+    afterId: "ginger-smooth-after",
+  },
 ] as const satisfies readonly {
   label: string;
   beforeId: PhotoId;
@@ -67,10 +82,9 @@ const DETAILS = [
   "detail-crown-platinum",
   "detail-waves-copper",
   "studio-mirror",
+  "shopfront",
   "detail-bond",
   "detail-colour-match",
-  "annie-portrait",
-  "shopfront",
 ] as const satisfies readonly PhotoId[];
 
 export default function GalleryPage() {

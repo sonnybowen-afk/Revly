@@ -8,7 +8,7 @@ import { AnnieHeading, AnnieSection } from "@/components/annie/ui";
 export const metadata: Metadata = {
   title: "Find my hair extension method",
   description:
-    "Seven questions about your hair, your lifestyle and your budget. The match finder scores LA weave, nano rings, micro rings, tape-in and sew-in weave against your answers — and says which ones are wrong for you.",
+    "Seven questions about your hair, your lifestyle and your budget. The match finder scores LA weave, nano rings, micro rings, mini-tip and tape hair extensions against your answers — and says which ones are wrong for you.",
 };
 
 export default function HairMatchPage() {

@@ -1,5 +1,5 @@
 import { RATING, SALON } from "@/lib/annie-salon";
-import { METHODS } from "@/lib/annie-methods";
+import { EXTRAS, METHODS } from "@/lib/annie-methods";
 import { REVIEWS_VERIFIED } from "@/lib/annie-reviews";
 
 /**
@@ -23,10 +23,10 @@ export function SalonJsonLd() {
     alternateName: SALON.alternateName,
     legalName: SALON.legalName,
     description:
-      "Boutique hair extension studio in Manchester Arndale Market. LA weave, nano rings, micro rings, tape-in wefts and sew-in weaves, matched and fitted by Annie.",
+      "Boutique hair extension studio in Manchester Arndale Market. La weave, nano rings, micro rings, mini-tip and tape hair extensions, matched and fitted by Annie. Walk in welcome, free consultation.",
     url: SALON.website,
     telephone: SALON.phoneE164,
-    priceRange: "££",
+    priceRange: "£",
     currenciesAccepted: "GBP",
     address: {
       "@type": "PostalAddress",
@@ -60,15 +60,34 @@ export function SalonJsonLd() {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Hair extension services",
-      itemListElement: METHODS.map((method) => ({
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: method.name,
-          description: method.summary,
-          serviceType: "Hair extensions",
-        },
-      })),
+      itemListElement: [
+        // Priced from the studio's own list: the full-head rate for each
+        // method, and the flat-price extras.
+        ...METHODS.map((method) => ({
+          "@type": "Offer",
+          name: `${method.name} — full head`,
+          price: method.price.fullHead,
+          priceCurrency: "GBP",
+          itemOffered: {
+            "@type": "Service",
+            name: method.name,
+            description: method.summary,
+            serviceType: "Hair extensions",
+          },
+        })),
+        ...EXTRAS.map((extra) => ({
+          "@type": "Offer",
+          name: extra.name,
+          price: extra.price,
+          priceCurrency: "GBP",
+          itemOffered: {
+            "@type": "Service",
+            name: extra.name,
+            description: extra.detail,
+            serviceType: "Hair extensions",
+          },
+        })),
+      ],
     },
     // `review` nodes are deliberately absent: they are only emitted once
     // REVIEWS_VERIFIED says the wall holds imported reviews rather than

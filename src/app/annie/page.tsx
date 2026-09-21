@@ -27,14 +27,14 @@ import {
 import { METHODS } from "@/lib/annie-methods";
 import { REVIEW_THEMES } from "@/lib/annie-reviews";
 import { ADDRESS_ONE_LINE, MAPS_URL, RATING, SALON } from "@/lib/annie-salon";
-import { formatDurationRange } from "@/lib/annie-pricing";
+import { formatDurationRange, formatGbp, unitRateLabel } from "@/lib/annie-pricing";
 
 const RIBBON = [
   "LA Weave",
   "Nano Rings",
   "Micro Rings",
   "Tape-in Wefts",
-  "Sew-in Weave",
+  "Mini-Tip",
   "Russian hair",
   "Colour matched by eye",
   "No glue, no heat",
@@ -83,7 +83,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Can I go to the gym, or swim?",
-    a: "Yes, though the method matters. LA weave and sew-in cope with anything. Tape-in is the one to think twice about if you swim often, because chlorine and oil-based products work on the adhesive. Say so at your consultation and Annie will steer you accordingly.",
+    a: "Yes, though the method matters. The LA weave copes with anything. Tape is the one to think twice about if you swim often, because chlorine and oil-based products work on the adhesive. Say so at your consultation and Annie will steer you accordingly.",
   },
   {
     q: "Do I need an appointment?",
@@ -130,12 +130,12 @@ export default function AnnieHomePage() {
             <Stat
               value={
                 <>
-                  <CountUp to={18} />
-                  <span className="text-2xl"> mths</span>
+                  <span className="text-2xl">from </span>
+                  <CountUp to={45} prefix="£" />
                 </>
               }
-              label="Hair can last"
-              detail="Re-used through every move-up"
+              label="A full head"
+              detail="The studio's own price list, in full on the services page"
             />
           </Reveal>
         </div>
@@ -343,12 +343,8 @@ function Methods() {
             <article className="annie-card annie-lift flex h-full flex-col p-6">
               <div className="flex items-start justify-between gap-4">
                 <h3 className="font-display text-xl">{method.name}</h3>
-                <span className="annie-label shrink-0 text-[0.55rem]">
-                  {method.budget === "value"
-                    ? "Value"
-                    : method.budget === "mid"
-                      ? "Mid"
-                      : "Premium"}
+                <span className="annie-label shrink-0 text-[0.55rem] whitespace-nowrap">
+                  {unitRateLabel(method)}
                 </span>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -363,9 +359,9 @@ function Methods() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="annie-label text-[0.55rem]">Move-ups</dt>
+                  <dt className="annie-label text-[0.55rem]">Full head</dt>
                   <dd className="font-technical mt-1 text-foreground">
-                    {method.maintenanceWeeks[0]}&ndash;{method.maintenanceWeeks[1]} wks
+                    {formatGbp(method.price.fullHead)}
                   </dd>
                 </div>
               </dl>
@@ -500,9 +496,9 @@ function Work() {
         </Reveal>
         <Reveal direction="zoom-blur" delay={90}>
           <BeforeAfter
-            label="Copper — length and volume"
-            beforeId="copper-before"
-            afterId="copper-after"
+            label="Brunette — bob to past the shoulders"
+            beforeId="bob-brunette-before"
+            afterId="bob-brunette-after"
           />
         </Reveal>
       </div>

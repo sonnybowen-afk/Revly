@@ -46,6 +46,12 @@ export const PHOTO_BRIEFS = {
   "pearl-after": "Pearl blonde, after: the finished set, waved, same angle.",
   "copper-before": "Copper, before: the client's own length, shot from behind.",
   "copper-after": "Copper, after: the finished set, waved, same angle.",
+  "salon-blonde-before": "Blonde, before: the client's own length at the studio mirror.",
+  "salon-blonde-after": "Blonde, after: the finished set, longer and fuller.",
+  "bob-brunette-before": "Brunette, before: a shoulder-length bob.",
+  "bob-brunette-after": "Brunette, after: the finished set, well past the shoulder blades.",
+  "ginger-smooth-before": "Ginger, before: dry, thinning ends.",
+  "ginger-smooth-after": "Ginger, after: the finished set, thick and smooth to the ends.",
 
   // ── Detail shots ────────────────────────────────────────────────
   "detail-waves-blonde": "The finished waves on a blonde set, close.",
@@ -56,15 +62,14 @@ export const PHOTO_BRIEFS = {
   // ── Still wanted ────────────────────────────────────────────────
   "detail-bond": "A bond at the root, shot close enough to show the scale. Still needed.",
   "detail-colour-match": "A shade match held against the client's own ends in daylight. Still needed.",
-  "annie-portrait": "Annie in the studio: portrait at the chair, market light behind. Still needed.",
-  "shopfront": "The shopfront inside the market, so people know what to look for. Still needed.",
+  "shopfront": "The shopfront inside the market, so people know what to look for.",
 
   // ── One per method. Each needs the bond itself, not a finished head ──
   "method-la-weave": "LA Weave: the ring row and the weft sewn onto it.",
   "method-nano-rings": "Nano Rings: a nano bond at the root, and the finished blend.",
   "method-micro-rings": "Micro Rings: a micro bond at the root, and the finished blend.",
-  "method-tape-in": "Tape-in Wefts: a tape pair at the root, showing how flat it sits.",
-  "method-sew-in-weave": "Sew-in Weave: the braided base, and the weft sewn onto it.",
+  "method-tape-in": "Tape Hair Extensions: a tape pair at the root, showing how flat it sits.",
+  "method-mini-tip": "Mini-Tip: a tipped strand at the root, and the finished blend.",
 } as const;
 
 export type PhotoId = keyof typeof PHOTO_BRIEFS;
@@ -110,6 +115,34 @@ export const PHOTOS: Partial<Record<PhotoId, Photo>> = {
   "copper-after": {
     src: "/annie/copper-after.jpg",
     alt: "The same copper hair after extensions, longer and fuller, curled into waves.",
+  },
+  "salon-blonde-before": {
+    src: "/annie/salon-blonde-before.jpg",
+    alt: "Blonde hair before extensions, straight and falling just past the shoulders, at the studio mirror.",
+  },
+  "salon-blonde-after": {
+    src: "/annie/salon-blonde-after.jpg",
+    alt: "The same blonde hair after extensions, noticeably longer and thicker through the lengths.",
+  },
+  "bob-brunette-before": {
+    src: "/annie/bob-brunette-before.jpg",
+    alt: "Brunette hair before extensions, cut into a shoulder-length bob.",
+  },
+  "bob-brunette-after": {
+    src: "/annie/bob-brunette-after.jpg",
+    alt: "The same brunette hair after extensions, now falling well past the shoulder blades.",
+  },
+  "ginger-smooth-before": {
+    src: "/annie/ginger-smooth-before.jpg",
+    alt: "Ginger hair before extensions, dry and thinning through the ends.",
+  },
+  "ginger-smooth-after": {
+    src: "/annie/ginger-smooth-after.jpg",
+    alt: "The same ginger hair after extensions, thick and smooth all the way to the ends.",
+  },
+  "shopfront": {
+    src: "/annie/shopfront.jpg",
+    alt: "The Annie's Secret unit inside Manchester Arndale Market: a lit black sign reading Hair Extensions and Weave Bar, with Just Walk In Welcome, Appointment Not Necessary, Free Consultation and the phone number.",
   },
 
   "detail-waves-blonde": {

@@ -5,8 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AlertCircle, Mail, MessageCircle, Phone, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { METHODS, methodById } from "@/lib/annie-methods";
-import type { Length, Volume } from "@/lib/annie-pricing";
-import { LENGTHS, VOLUME_LABELS } from "@/lib/annie-pricing";
+import { formatGbp, quantityLabel, quote, unitRateLabel } from "@/lib/annie-pricing";
 import type { BookingDraft, Errors, FieldName } from "@/lib/annie-booking";
 import {
   BOOKABLE_DAYS,
@@ -73,6 +72,7 @@ export function BookingForm() {
     }
   }, [draft]);
 
+  const chosen = draft.methodId ? methodById(draft.methodId) : undefined;
   const errors = useMemo(() => validate(draft), [draft]);
   const visible: Errors = submitted
     ? errors
@@ -254,7 +254,10 @@ export function BookingForm() {
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Pill
                     selected={draft.methodId === ""}
-                    onClick={() => set("methodId", "")}
+                    onClick={() => {
+                      set("methodId", "");
+                      set("quantity", 0);
+                    }}
                   >
                     Not sure — advise me
                   </Pill>
@@ -262,7 +265,12 @@ export function BookingForm() {
                     <Pill
                       key={m.id}
                       selected={draft.methodId === m.id}
-                      onClick={() => set("methodId", m.id)}
+                      onClick={() => {
+                        // Units differ per method, so the amount cannot
+                        // carry over from the previous choice.
+                        set("methodId", m.id);
+                        set("quantity", 0);
+                      }}
                     >
                       {m.name}
                     </Pill>
@@ -270,37 +278,37 @@ export function BookingForm() {
                 </div>
               </Field>
 
-              <div className="grid gap-6 sm:grid-cols-2">
-                <Field id="field-volume" label="How much hair">
+              {chosen ? (
+                <Field
+                  id="field-quantity"
+                  label={`How many ${chosen.price.unitPlural}`}
+                  help={`${unitRateLabel(chosen)}. A full head is ${quantityLabel(chosen, chosen.price.fullHeadQty)} at ${formatGbp(chosen.price.fullHead)}.`}
+                  error={visible.quantity}
+                >
                   <div className="flex flex-wrap gap-2">
-                    {(["half", "full", "mega"] as Volume[]).map((v) => (
+                    {chosen.price.steps.map((step) => (
                       <Pill
-                        key={v}
-                        selected={draft.volume === v}
-                        onClick={() => set("volume", draft.volume === v ? "" : v)}
-                      >
-                        {VOLUME_LABELS[v]}
-                      </Pill>
-                    ))}
-                  </div>
-                </Field>
-
-                <Field id="field-length" label="Length">
-                  <div className="flex flex-wrap gap-2">
-                    {LENGTHS.map((inches: Length) => (
-                      <Pill
-                        key={inches}
-                        selected={draft.length === inches}
+                        key={step}
+                        selected={draft.quantity === step}
                         onClick={() =>
-                          set("length", draft.length === inches ? "" : inches)
+                          set("quantity", draft.quantity === step ? 0 : step)
                         }
                       >
-                        {inches}&Prime;
+                        {step}
+                        {step === chosen.price.fullHeadQty ? " · full head" : ""}
                       </Pill>
                     ))}
                   </div>
+                  {draft.quantity > 0 ? (
+                    <p className="mt-3 text-sm text-muted-foreground">
+                      Price list:{" "}
+                      <span className="font-technical text-primary">
+                        {formatGbp(quote(chosen, draft.quantity).total)}
+                      </span>
+                    </p>
+                  ) : null}
                 </Field>
-              </div>
+              ) : null}
             </>
           ) : null}
 

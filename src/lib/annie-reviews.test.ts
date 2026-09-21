@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
+import { METHOD_IDS } from "./annie-methods.ts";
 import { RATING } from "./annie-salon.ts";
 import type { Review } from "./annie-reviews.ts";
 import {
@@ -32,6 +33,19 @@ describe("review honesty", () => {
     for (const r of REVIEWS) {
       assert.equal(r.source, "Sample", `${r.id} should be flagged as a sample`);
       assert.match(r.body, /placeholder/i, `${r.id} should read as a placeholder`);
+    }
+  });
+
+  it("only names methods that are actually on the price list", () => {
+    // Sew-in weave was dropped when the real price list arrived, and a
+    // review pointing at a method that no longer exists silently loses
+    // its filter chip rather than failing loudly.
+    for (const r of REVIEWS) {
+      if (r.methodId === null) continue;
+      assert.ok(
+        METHOD_IDS.includes(r.methodId),
+        `${r.id} names "${r.methodId}", which is not a method Annie fits`,
+      );
     }
   });
 

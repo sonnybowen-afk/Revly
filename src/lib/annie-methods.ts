@@ -1,15 +1,20 @@
 /**
- * The extension methods Annie fits, described in enough detail to drive the
- * services page, the comparison table, the hair-match finder and the
- * maintenance estimator from one place.
+ * The extension methods Annie fits, and what she charges for them.
  *
- * The method facts (how a fitting works, what hair it suits, how often it
- * needs moving up) are standard trade knowledge and stable.
+ * ── On the money ──────────────────────────────────────────────────────
+ * Every figure below is transcribed from the salon's own printed price
+ * list, supplied by the client. It is reproduced exactly: the unit rate
+ * and the full-head rate, both as written.
  *
- * The money is not. Every `guide` figure below is a PLACEHOLDER band, and
- * PRICING_CONFIRMED is false until Annie replaces them with her real card.
- * While that flag is false the UI labels every price as a guide and leads
- * with the consultation — see `annie-pricing.ts`.
+ * Note that the full-head rate is not always the unit rate times the
+ * quantity — a full head of 150 pieces is £125, not £150. That is a real
+ * bundled rate from the list, not a rounding error, so `fullHead` is
+ * stored separately rather than computed.
+ *
+ * What the list does *not* say is whether the hair itself is included.
+ * So neither does the site: the prices are presented as the studio
+ * presents them, and the page directs you to the free consultation to
+ * confirm what a given price covers. Do not infer it here.
  */
 
 export type HairType = "fine" | "medium" | "thick" | "textured";
@@ -17,7 +22,27 @@ export type Density = "low" | "medium" | "high";
 export type Goal = "length" | "volume" | "both";
 export type Lifestyle = "relaxed" | "active" | "very-active";
 export type Upkeep = "minimal" | "standard" | "frequent";
-export type Budget = "value" | "mid" | "premium";
+/**
+ * The two price points the list actually has: the row-and-pack methods
+ * at £45–£50 a full head, and the strand methods at £125. There is no
+ * third tier, so the type does not pretend there is one.
+ */
+export type Budget = "value" | "mid";
+
+/** How a method is counted and charged, straight off the price list. */
+export type Price = {
+  /** Pounds per unit. */
+  readonly unit: number;
+  /** "row", "piece", "pack" — singular. */
+  readonly unitLabel: string;
+  readonly unitPlural: string;
+  /** How many units make a full head, per the list. */
+  readonly fullHeadQty: number;
+  /** The full-head price, as printed. May undercut unit × quantity. */
+  readonly fullHead: number;
+  /** The quantities the calculator offers, ending at a full head. */
+  readonly steps: readonly number[];
+};
 
 export type Method = {
   readonly id: string;
@@ -45,10 +70,7 @@ export type Method = {
   /** 1–5: how gentle it is on fragile or previously bleached hair. */
   readonly gentleness: number;
   readonly budget: Budget;
-  /** Indicative fitting price band in GBP. Placeholder — see the note above. */
-  readonly guide: readonly [number, number];
-  /** Indicative maintenance appointment price in GBP. Placeholder. */
-  readonly guideMaintenance: number;
+  readonly price: Price;
   readonly bestFor: string;
   readonly watchOut: string;
 };
@@ -59,7 +81,7 @@ export const METHODS: readonly Method[] = [
     name: "LA Weave",
     summary:
       "A weft sewn onto a row of micro-rings. No glue, no heat, and it carries real weight.",
-    how: "A line of tiny rings is threaded along your own hair, then a continuous weft is sewn onto that row. Because the weight sits on the row rather than on single strands, it holds far more hair than an individual-bond method.",
+    how: "A line of tiny rings is threaded along your own hair, then a continuous weft is sewn onto that row. Because the weight sits on the row rather than on single strands, it holds far more hair than an individual-bond method. It is also the quickest route to a full head here — three rows does it.",
     suits: ["medium", "thick", "textured"],
     avoid: ["fine"],
     goals: ["volume", "both"],
@@ -71,9 +93,15 @@ export const METHODS: readonly Method[] = [
     discretion: 4,
     resilience: 5,
     gentleness: 4,
-    budget: "mid",
-    guide: [180, 400],
-    guideMaintenance: 60,
+    budget: "value",
+    price: {
+      unit: 15,
+      unitLabel: "row",
+      unitPlural: "rows",
+      fullHeadQty: 3,
+      fullHead: 45,
+      steps: [1, 2, 3],
+    },
     bestFor: "Big, dense transformations that still have to survive the gym.",
     watchOut:
       "Needs enough of your own hair along the row to hide the weft, so it is not the one for very fine hair.",
@@ -95,9 +123,15 @@ export const METHODS: readonly Method[] = [
     discretion: 5,
     resilience: 4,
     gentleness: 5,
-    budget: "premium",
-    guide: [250, 600],
-    guideMaintenance: 80,
+    budget: "mid",
+    price: {
+      unit: 1,
+      unitLabel: "piece",
+      unitPlural: "pieces",
+      fullHeadQty: 150,
+      fullHead: 125,
+      steps: [50, 100, 150],
+    },
     bestFor: "Fine hair, high partings, and anyone who wears their hair up.",
     watchOut: "The longest fitting of the lot — set the afternoon aside.",
   },
@@ -108,7 +142,7 @@ export const METHODS: readonly Method[] = [
       "Individual strands on a small ring. The dependable middle ground on price and upkeep.",
     how: "Strands are attached one at a time with a small copper ring, clamped flat. Nothing is glued or heated, and each bond can be moved up and re-used as your hair grows.",
     suits: ["medium", "thick"],
-    avoid: [],
+    avoid: ["textured"],
     goals: ["length", "volume", "both"],
     fitMinutes: [90, 180],
     maintenanceWeeks: [8, 12],
@@ -119,17 +153,52 @@ export const METHODS: readonly Method[] = [
     resilience: 4,
     gentleness: 4,
     budget: "mid",
-    guide: [200, 450],
-    guideMaintenance: 65,
+    price: {
+      unit: 1,
+      unitLabel: "piece",
+      unitPlural: "pieces",
+      fullHeadQty: 150,
+      fullHead: 125,
+      steps: [50, 100, 150],
+    },
     bestFor: "A first set of extensions when you want length without fuss.",
     watchOut: "Slightly more visible than nano in a very fine, high parting.",
   },
   {
+    id: "mini-tip",
+    name: "Mini-Tip",
+    summary:
+      "A keratin-tipped strand secured with a ring. Small bond, strand by strand.",
+    how: "Each strand comes pre-tipped and is secured with a ring rather than melted on, so the bond stays small and sits close to the root. Fitted one strand at a time, like micro and nano rings.",
+    suits: ["medium", "thick"],
+    avoid: ["textured"],
+    goals: ["length", "volume", "both"],
+    fitMinutes: [120, 210],
+    maintenanceWeeks: [8, 12],
+    hairLifeMonths: [9, 15],
+    usesHeat: false,
+    usesGlue: false,
+    discretion: 4,
+    resilience: 4,
+    gentleness: 4,
+    budget: "mid",
+    price: {
+      unit: 1,
+      unitLabel: "piece",
+      unitPlural: "pieces",
+      fullHeadQty: 150,
+      fullHead: 125,
+      steps: [50, 100, 150],
+    },
+    bestFor: "A neat, strand-by-strand finish with a small, tidy bond.",
+    watchOut: "Strand by strand means a long appointment — allow the time.",
+  },
+  {
     id: "tape-in",
-    name: "Tape-in Wefts",
+    name: "Tape Hair Extensions",
     summary:
       "Flat, seamless panels sandwiched either side of your own hair. In and out fastest.",
-    how: "Pre-taped wefts are placed in pairs, back to back, around a thin section of your own hair. They lie completely flat, which is why they disappear so well under fine to medium hair.",
+    how: "Pre-taped wefts are placed in pairs, back to back, around a thin section of your own hair. They lie completely flat, which is why they disappear so well under fine to medium hair. Two packs does a full head.",
     suits: ["fine", "medium"],
     avoid: ["textured"],
     goals: ["length", "volume", "both"],
@@ -142,35 +211,37 @@ export const METHODS: readonly Method[] = [
     resilience: 3,
     gentleness: 4,
     budget: "value",
-    guide: [150, 350],
-    guideMaintenance: 55,
+    price: {
+      unit: 25,
+      unitLabel: "pack",
+      unitPlural: "packs",
+      fullHeadQty: 2,
+      fullHead: 50,
+      steps: [1, 2],
+    },
     bestFor: "A fast, flat, natural finish — and the quickest appointment.",
     watchOut:
       "The medical-grade adhesive does not love oil-based products or daily swimming.",
   },
+] as const;
+
+/**
+ * The rest of the price list — services that are not a fitting, printed
+ * as flat prices with no unit.
+ */
+export const EXTRAS = [
   {
-    id: "sew-in-weave",
-    name: "Sew-in Weave",
-    summary:
-      "A braided base with the weft stitched on. The strongest hold for textured hair.",
-    how: "Your own hair is cornrowed into a flat base and the weft is sewn directly onto the braids. Nothing clamps onto individual strands at all, which is why it suits coily and afro-textured hair so well.",
-    suits: ["textured", "thick"],
-    avoid: ["fine"],
-    goals: ["length", "volume", "both"],
-    fitMinutes: [120, 240],
-    maintenanceWeeks: [6, 10],
-    hairLifeMonths: [9, 18],
-    usesHeat: false,
-    usesGlue: false,
-    discretion: 3,
-    resilience: 5,
-    gentleness: 3,
-    budget: "mid",
-    guide: [180, 420],
-    guideMaintenance: 60,
-    bestFor: "Protective styling on textured hair, and full dramatic volume.",
-    watchOut:
-      "The braid base must be kept clean and must never be taken down too tight.",
+    id: "take-out",
+    name: "Extensions take-out",
+    price: 10,
+    detail:
+      "Removing an existing set, whoever fitted it. Worth booking together with a refit.",
+  },
+  {
+    id: "kk-braid",
+    name: "Kim Kardashian braid",
+    price: 20,
+    detail: "The sleek, tight-to-the-scalp braid, done in the studio.",
   },
 ] as const;
 
