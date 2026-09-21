@@ -77,7 +77,7 @@ export function BeforeAfter({
           caption={afterText}
           src={afterSrc}
           alt={`After: ${label}`}
-          ratio="4 / 3"
+          ratio="2 / 3"
           className="rounded-none border-0"
           index={1}
           still
@@ -94,7 +94,7 @@ export function BeforeAfter({
             id={beforeId}
             caption={beforeText}
             src={beforeSrc}
-            ratio="4 / 3"
+            ratio="2 / 3"
             className="h-full rounded-none border-0"
             index={0}
             still

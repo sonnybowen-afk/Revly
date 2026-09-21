@@ -56,39 +56,67 @@ manual penalty waiting to happen.
 
 ### 3. Photography — `src/lib/annie-photos.ts`
 
-The site ships with **no photographs**. I could not download them:
-`anniesecrethairextension.co.uk`, Instagram, Fresha and Treatwell are all
-refused by this environment's network policy (403 at the egress gateway),
-so there was nothing to pull across. And filling a real salon's gallery
-with stock pictures of other people's hair would misrepresent Annie's work,
-so every image position renders a `PhotoFrame` instead: a gold frame
-stating exactly which photograph belongs in it.
+**13 of 22 slots are filled** with Annie's own photographs, supplied by the
+client from her Instagram and prepared for the web here. Nine remain as
+briefs.
 
-**Every slot is named and briefed** in `annie-photos.ts` — 31 of them, from
-the hero down to each before/after half. Adding a photograph is two lines:
+Every image position is a named slot. A slot with an entry in `PHOTOS`
+renders the photograph; a slot without one renders a `PhotoFrame` — a gold
+frame stating what belongs there. So the site never shows a broken image
+and never shows a stock picture of somebody else's work.
+
+Adding the rest is two lines each:
 
 ```bash
-cp hero.jpg public/annie/hero.jpg
+cp annie-portrait.jpg public/annie/
 ```
 
 ```ts
-// src/lib/annie-photos.ts
-export const PHOTOS: Partial<Record<PhotoId, Photo>> = {
-  "hero": {
-    src: "/annie/hero.jpg",
-    alt: "A finished full head of 20 inch nano ring extensions, waved.",
-  },
-};
+"annie-portrait": {
+  src: "/annie/annie-portrait.jpg",
+  alt: "Annie at the styling chair in the studio.",
+},
 ```
 
-That is all. The frame keeps its aspect ratio, so the page does not move;
-the written brief disappears on its own; the gallery's status card counts
-up from "0 of 31"; and a before/after pair only drops its written briefs
-once *both* halves are real photographs.
+The frame keeps its ratio so the page does not move, the brief disappears,
+and the gallery's counter goes up.
 
-`PHOTO_BRIEFS` in the same file is the shot list — what to photograph, from
-what angle, in what light. Alt text is required per photograph, because
-"hair extensions" is not alt text.
+#### Still wanted
+
+| Slot | Shot |
+|---|---|
+| `annie-portrait` | Annie at the chair — the About page leads with it |
+| `shopfront` | The unit inside the market, so people can find it |
+| `detail-bond` | A bond at the root, close enough to show the scale |
+| `detail-colour-match` | A shade held against the client's own ends in daylight |
+| `method-*` (5) | One per method: the bond itself, not a finished head |
+
+#### What the photographs are allowed to claim
+
+This matters more than it sounds. Annie's posts record the colour and show
+the before and after; they do **not** record which method was fitted, how
+many inches, or half head against full head. So nothing on the site says
+so either.
+
+The transformation slots are therefore named by colour (`blonde-before`,
+`copper-after`) rather than by method, and the visible labels went from
+invented specifics like *"Nano rings, 20 inch, full head"* to what the two
+frames actually show: *"Blonde — length and volume"*. The five `method-*`
+slots stay empty for the same reason — a photograph of a finished head is
+not a photograph of a nano bond, and filing it under one would be a claim
+the image does not support.
+
+#### How they were prepared
+
+The originals were phone screenshots of Instagram and two `.mp4` posts.
+For each: the Instagram chrome was cropped off, the side-by-side composites
+were split at the gutter into separate before and after frames, the best
+frames were picked out of the videos, and everything was cropped to a
+common 2:3, resized and saved as progressive JPEG. Thirteen images come to
+1.2 MB in total.
+
+Instagram's own overlays — the video timer, the mute badge — were cropped
+out. Annie's own watermarks were kept.
 
 ## What is actually built
 
@@ -100,7 +128,7 @@ what angle, in what light. Alt text is required per photograph, because
 | Review wall | `/annie/reviews` | Rating breakdown, filter by stars and by method |
 | Enquiry builder | `/annie/book` | Validates, saves a draft, and composes a finished WhatsApp / SMS / email message |
 | Structured data | everywhere | `HairSalon` with real NAP, hours and services; `FAQPage`; `BreadcrumbList` |
-| Photo manifest | `src/lib/annie-photos.ts` | 31 named, briefed slots; drop a file in and the frame becomes a photograph |
+| Photo manifest | `src/lib/annie-photos.ts` | 22 named slots, 13 filled with Annie's own work; drop a file in and the frame becomes a photograph |
 | Live motion | `src/components/annie/motion.tsx` | Custom cursor, magnetic CTAs, word reveals, parallax, scroll progress, petals |
 
 ### The logic, and its tests

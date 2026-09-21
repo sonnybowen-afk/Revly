@@ -29,26 +29,31 @@ export const metadata: Metadata = {
  * `public/annie/` and pass `src` to turn a slot into a photograph — the
  * frame keeps its aspect ratio, so nothing on the page moves when you do.
  */
+/**
+ * Labels describe the colour and what is visibly different between the
+ * two frames — nothing else. Annie's posts do not record which method
+ * was fitted or how many inches, so neither does this page.
+ */
 const TRANSFORMATIONS = [
   {
-    label: "Nano rings, 20 inch, full head",
-    beforeId: "gallery-1-before",
-    afterId: "gallery-1-after",
+    label: "Blonde — length and volume",
+    beforeId: "blonde-before",
+    afterId: "blonde-after",
   },
   {
-    label: "LA weave, 22 inch, mega volume",
-    beforeId: "gallery-2-before",
-    afterId: "gallery-2-after",
+    label: "Platinum — length added",
+    beforeId: "platinum-before",
+    afterId: "platinum-after",
   },
   {
-    label: "Sew-in weave, 18 inch, protective style",
-    beforeId: "gallery-3-before",
-    afterId: "gallery-3-after",
+    label: "Pearl blonde — length and waves",
+    beforeId: "pearl-before",
+    afterId: "pearl-after",
   },
   {
-    label: "Tape-in wefts, 16 inch, half head",
-    beforeId: "gallery-4-before",
-    afterId: "gallery-4-after",
+    label: "Copper — length and volume",
+    beforeId: "copper-before",
+    afterId: "copper-after",
   },
 ] as const satisfies readonly {
   label: string;
@@ -56,15 +61,16 @@ const TRANSFORMATIONS = [
   afterId: PhotoId;
 }[];
 
+/** Four real detail shots, then the four still wanted. */
 const DETAILS = [
-  "detail-1",
-  "detail-2",
-  "detail-3",
-  "detail-4",
-  "detail-5",
-  "detail-6",
-  "detail-7",
-  "detail-8",
+  "detail-waves-blonde",
+  "detail-crown-platinum",
+  "detail-waves-copper",
+  "studio-mirror",
+  "detail-bond",
+  "detail-colour-match",
+  "annie-portrait",
+  "shopfront",
 ] as const satisfies readonly PhotoId[];
 
 export default function GalleryPage() {
@@ -150,7 +156,7 @@ export default function GalleryPage() {
               <h2 className="font-display text-xl">
                 {filled === 0
                   ? "These frames are waiting for Annie's photographs"
-                  : `${filled} of ${total} photographs added`}
+                  : `${filled} of ${total} photo slots filled`}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Rather than fill the gallery with stock pictures of other

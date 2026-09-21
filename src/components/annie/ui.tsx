@@ -247,7 +247,10 @@ export function PhotoFrame({
     <div
       style={{ aspectRatio: ratio }}
       className={cn(
-        "annie-zoom-frame annie-sheen relative w-full rounded-2xl border border-card-border bg-background-subtle",
+        // A dashed gold edge and a deeper wash, so an unfilled slot reads
+        // as a designed frame rather than as a hole in the page. On the
+        // cream ground the old pale tint all but disappeared.
+        "annie-zoom-frame annie-sheen relative w-full rounded-2xl border border-dashed border-primary/35 bg-primary-soft/60",
         className,
       )}
     >
@@ -257,10 +260,10 @@ export function PhotoFrame({
         style={{
           background:
             hue === 0
-              ? "linear-gradient(155deg, #fdf3e4 0%, #f9e6ea 55%, #fbeee2 100%)"
+              ? "linear-gradient(155deg, #f8e7c9 0%, #f3d3da 55%, #f7e3cb 100%)"
               : hue === 1
-                ? "linear-gradient(155deg, #fce9ee 0%, #fdf4e6 58%, #f8e3e9 100%)"
-                : "linear-gradient(155deg, #fbefe2 0%, #f9e9ef 48%, #fdf6ec 100%)",
+                ? "linear-gradient(155deg, #f6d9e1 0%, #f9e7c8 58%, #f0cfd8 100%)"
+                : "linear-gradient(155deg, #f7e2c8 0%, #f4dae2 48%, #f9ecd4 100%)",
         }}
       />
       {/* A few strands, so an empty frame still reads as hair. */}
@@ -275,9 +278,9 @@ export function PhotoFrame({
             key={x}
             d={`M ${x} -5 C ${x + (i % 2 ? 14 : -14)} 40, ${x - (i % 2 ? 12 : -12)} 82, ${x + (i % 2 ? 6 : -6)} 135`}
             fill="none"
-            stroke="#c9a227"
-            strokeWidth="0.5"
-            opacity={0.28 + i * 0.09}
+            stroke="#a8811a"
+            strokeWidth="0.6"
+            opacity={0.3 + i * 0.09}
           />
         ))}
       </svg>

@@ -12,6 +12,7 @@ import { BeforeAfter } from "@/components/annie/before-after";
 import { CountUp } from "@/components/annie/count-up";
 import { Faq, FaqJsonLd } from "@/components/annie/faq";
 import { Marquee } from "@/components/annie/marquee";
+import { brief, photo } from "@/lib/annie-photos";
 import { Parallax, WordReveal } from "@/components/annie/motion";
 import { Reveal } from "@/components/annie/reveal";
 import { Stars } from "@/components/annie/review-wall";
@@ -255,11 +256,14 @@ function Hero() {
               </div>
             </div>
             </Parallax>
-            <p className="mt-10 pl-2 text-xs leading-relaxed text-muted-foreground">
-              <span className="annie-label text-[0.55rem]">Photo slot</span>{" "}
-              One finished head of hair, three-quarter profile, market light
-              behind.
-            </p>
+            {/* The brief only shows while the slot is empty; once the
+                photograph is in the manifest it speaks for itself. */}
+            {photo("hero") ? null : (
+              <p className="mt-10 pl-2 text-xs leading-relaxed text-muted-foreground">
+                <span className="annie-label text-[0.55rem]">Photo slot</span>{" "}
+                {brief("hero")}
+              </p>
+            )}
           </Reveal>
         </div>
       </div>
@@ -489,25 +493,25 @@ function Work() {
       <div className="mt-14 grid gap-8 lg:grid-cols-2">
         <Reveal direction="zoom-blur">
           <BeforeAfter
-            label="Nano rings, 20 inch, full head"
-            beforeId="ba-nano-before"
-            afterId="ba-nano-after"
+            label="Blonde — length and volume"
+            beforeId="blonde-before"
+            afterId="blonde-after"
           />
         </Reveal>
         <Reveal direction="zoom-blur" delay={90}>
           <BeforeAfter
-            label="LA weave, 22 inch, mega volume"
-            beforeId="ba-weave-before"
-            afterId="ba-weave-after"
+            label="Copper — length and volume"
+            beforeId="copper-before"
+            afterId="copper-after"
           />
         </Reveal>
       </div>
 
       <Reveal delay={160}>
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          <PhotoFrame id="home-detail-bond" ratio="1 / 1" index={0} />
-          <PhotoFrame id="home-detail-match" ratio="1 / 1" index={1} />
-          <PhotoFrame id="home-studio" ratio="1 / 1" index={2} />
+          <PhotoFrame id="detail-waves-blonde" ratio="1 / 1" index={0} />
+          <PhotoFrame id="detail-crown-platinum" ratio="1 / 1" index={1} />
+          <PhotoFrame id="detail-waves-copper" ratio="1 / 1" index={2} />
         </div>
       </Reveal>
     </AnnieSection>
@@ -628,7 +632,7 @@ function Visit() {
         </div>
 
         <Reveal direction="zoom" delay={120}>
-          <PhotoFrame id="visit-studio" ratio="4 / 5" index={2} />
+          <PhotoFrame id="studio-mirror" ratio="4 / 5" index={2} />
         </Reveal>
       </div>
     </AnnieSection>
