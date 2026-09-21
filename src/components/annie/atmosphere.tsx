@@ -1,15 +1,16 @@
 import { cn } from "@/lib/utils";
+import { Parallax, Petals } from "./motion";
 
 /**
  * The light behind everything.
  *
- * Three blurred jewel fields — champagne, rose gold and amethyst —
- * drifting on different cycles so the background is never the same twice,
- * over a soft vignette that pulls the eye back to the centre column.
+ * Three blurred colour fields — gold, blush and a warm cream — drifting
+ * on different cycles so the background is never the same twice, each on
+ * its own parallax rate so the layers separate as you scroll. Blush
+ * petals fall across the whole thing.
  *
- * Polished, not textured: there is deliberately no grain or noise layer,
- * because grain over a warm dark ground reads as hide rather than as
- * lacquer, and this brand is lacquer.
+ * On a cream ground the auras are washes, not glows: low alpha and wide
+ * blur, so they tint the paper rather than sitting on top of it.
  *
  * Purely decorative, so it is aria-hidden and cannot take pointer events.
  * It animates transform only, and the reduced-motion block in globals.css
@@ -18,11 +19,14 @@ import { cn } from "@/lib/utils";
 export function Atmosphere({
   className,
   intensity = "normal",
+  petals = true,
 }: {
   className?: string;
   intensity?: "quiet" | "normal" | "loud";
+  /** Off for dense bands where falling petals would fight the content. */
+  petals?: boolean;
 }) {
-  const scale = { quiet: 0.55, normal: 1, loud: 1.6 }[intensity];
+  const scale = { quiet: 0.55, normal: 1, loud: 1.5 }[intensity];
 
   return (
     <div
@@ -32,45 +36,55 @@ export function Atmosphere({
         className,
       )}
     >
-      <div
-        className="annie-aura annie-drift"
-        style={{
-          top: "-20%",
-          left: "-12%",
-          width: "clamp(20rem, 54vw, 48rem)",
-          aspectRatio: "1",
-          background: `radial-gradient(circle, rgba(242,211,132,${0.2 * scale}) 0%, transparent 68%)`,
-        }}
-      />
-      <div
-        className="annie-aura annie-float"
-        style={{
-          bottom: "-26%",
-          right: "-14%",
-          width: "clamp(18rem, 48vw, 42rem)",
-          aspectRatio: "1",
-          background: `radial-gradient(circle, rgba(240,184,196,${0.17 * scale}) 0%, transparent 70%)`,
-          animationDelay: "-6s",
-        }}
-      />
-      <div
-        className="annie-aura annie-drift"
-        style={{
-          top: "24%",
-          right: "18%",
-          width: "clamp(14rem, 34vw, 30rem)",
-          aspectRatio: "1",
-          background: `radial-gradient(circle, rgba(184,154,232,${0.16 * scale}) 0%, transparent 72%)`,
-          animationDelay: "-11s",
-          animationDuration: "28s",
-        }}
-      />
-      {/* Vignette. Keeps the auras from washing the edges out. */}
+      {/* Each layer drifts at its own rate, so they separate on scroll. */}
+      <Parallax speed={0.06}>
+        <div
+          className="annie-aura annie-drift"
+          style={{
+            top: "-18%",
+            left: "-10%",
+            width: "clamp(20rem, 54vw, 48rem)",
+            aspectRatio: "1",
+            background: `radial-gradient(circle, rgba(201,162,39,${0.18 * scale}) 0%, transparent 68%)`,
+          }}
+        />
+      </Parallax>
+      <Parallax speed={-0.1}>
+        <div
+          className="annie-aura annie-float"
+          style={{
+            bottom: "-24%",
+            right: "-12%",
+            width: "clamp(18rem, 48vw, 42rem)",
+            aspectRatio: "1",
+            background: `radial-gradient(circle, rgba(232,160,180,${0.3 * scale}) 0%, transparent 70%)`,
+            animationDelay: "-6s",
+          }}
+        />
+      </Parallax>
+      <Parallax speed={0.14}>
+        <div
+          className="annie-aura annie-drift"
+          style={{
+            top: "22%",
+            right: "16%",
+            width: "clamp(14rem, 34vw, 30rem)",
+            aspectRatio: "1",
+            background: `radial-gradient(circle, rgba(247,214,222,${0.5 * scale}) 0%, transparent 72%)`,
+            animationDelay: "-11s",
+            animationDuration: "28s",
+          }}
+        />
+      </Parallax>
+
+      {petals ? <Petals count={intensity === "loud" ? 16 : 9} /> : null}
+
+      {/* A soft cream fade at the foot, so a band ends rather than stops. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 92% at 50% 0%, transparent 38%, rgba(8,6,13,0.78) 100%)",
+            "linear-gradient(to bottom, transparent 55%, rgba(255,251,247,0.85) 100%)",
         }}
       />
     </div>
@@ -111,7 +125,7 @@ export function StrandField({
       // Rough path length — it only needs to exceed the real one.
       dash: Math.round(drop * 1.8),
       delay: Math.round(next() * 1100),
-      opacity: 0.14 + next() * 0.34,
+      opacity: 0.2 + next() * 0.4,
       width: 0.6 + next() * 1.2,
     };
   });
@@ -125,11 +139,11 @@ export function StrandField({
     >
       <defs>
         <linearGradient id="annie-strand" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f2d384" stopOpacity="0" />
-          <stop offset="26%" stopColor="#f2d384" stopOpacity="1" />
-          <stop offset="58%" stopColor="#f0b8c4" stopOpacity="0.85" />
-          <stop offset="84%" stopColor="#b89ae8" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#b89ae8" stopOpacity="0" />
+          <stop offset="0%" stopColor="#c9a227" stopOpacity="0" />
+          <stop offset="26%" stopColor="#c9a227" stopOpacity="0.9" />
+          <stop offset="58%" stopColor="#d99aab" stopOpacity="0.8" />
+          <stop offset="84%" stopColor="#e8a0b4" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#e8a0b4" stopOpacity="0" />
         </linearGradient>
       </defs>
       {strands.map((s, i) => (

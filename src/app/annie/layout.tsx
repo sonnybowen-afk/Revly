@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
 import { AnnieHeader } from "@/components/annie/annie-header";
 import { AnnieFooter } from "@/components/annie/annie-footer";
 import { SalonJsonLd } from "@/components/annie/json-ld";
+import { CustomCursor, ScrollProgress } from "@/components/annie/motion";
 import { SALON } from "@/lib/annie-salon";
 
 /* Display serif — the luxury/editorial half of the pairing. */
@@ -77,6 +78,8 @@ export default function AnnieLayout({
       className={`annie-root flex min-h-dvh flex-col ${playfair.variable} ${inter.variable} ${jetbrains.variable}`}
     >
       <SalonJsonLd />
+      <ScrollProgress />
+      <CustomCursor />
       <a
         href="#annie-main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-primary focus:px-5 focus:py-3 focus:font-semibold focus:text-on-primary"

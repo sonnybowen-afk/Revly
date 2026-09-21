@@ -10,6 +10,7 @@ import {
   AnnieSection,
   PhotoFrame,
 } from "@/components/annie/ui";
+import type { PhotoId } from "@/lib/annie-photos";
 import { HAIR_TYPE_LABELS, METHODS } from "@/lib/annie-methods";
 import type { HairType } from "@/lib/annie-methods";
 import { formatDurationRange } from "@/lib/annie-pricing";
@@ -245,7 +246,7 @@ export default function ServicesPage() {
 
                 <Reveal direction="zoom" delay={120}>
                   <PhotoFrame
-                    caption={`${method.name}: a close, well-lit shot of the bond at the root, and the finished blend.`}
+                    id={`method-${method.id}` as PhotoId}
                     ratio="4 / 5"
                     index={i}
                   />

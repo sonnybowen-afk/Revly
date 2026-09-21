@@ -10,6 +10,8 @@ import {
   AnnieSection,
   PhotoFrame,
 } from "@/components/annie/ui";
+import type { PhotoId } from "@/lib/annie-photos";
+import { photoProgress } from "@/lib/annie-photos";
 import { SALON } from "@/lib/annie-salon";
 
 export const metadata: Metadata = {
@@ -30,38 +32,44 @@ export const metadata: Metadata = {
 const TRANSFORMATIONS = [
   {
     label: "Nano rings, 20 inch, full head",
-    before: "Before: fine hair at collarbone length, centre parting, daylight.",
-    after: "After: nano rings fitted and cut in, same parting, same light.",
+    beforeId: "gallery-1-before",
+    afterId: "gallery-1-after",
   },
   {
     label: "LA weave, 22 inch, mega volume",
-    before: "Before: fine ponytail shot from behind, natural light.",
-    after: "After: the weave row fitted, blended and styled into soft waves.",
+    beforeId: "gallery-2-before",
+    afterId: "gallery-2-after",
   },
   {
     label: "Sew-in weave, 18 inch, protective style",
-    before: "Before: natural coils, shot at the crown to show the braid base.",
-    after: "After: the weft sewn in, blended at the leave-out and finished.",
+    beforeId: "gallery-3-before",
+    afterId: "gallery-3-after",
   },
   {
     label: "Tape-in wefts, 16 inch, half head",
-    before: "Before: shoulder-length hair, flat through the ends.",
-    after: "After: tape wefts placed, showing how flat they sit at the root.",
+    beforeId: "gallery-4-before",
+    afterId: "gallery-4-after",
   },
-] as const;
+] as const satisfies readonly {
+  label: string;
+  beforeId: PhotoId;
+  afterId: PhotoId;
+}[];
 
 const DETAILS = [
-  "A nano bond at the root, shot close enough to show the scale.",
-  "A shade match held against the client's own ends in daylight.",
-  "A finished LA weave row, parted to show the weft hidden underneath.",
-  "The blend at the leave-out on a sew-in, looking down at the crown.",
-  "Hair before fitting: wefts laid out, colour-matched and measured.",
-  "The studio inside Arndale Market — chair, mirror, and market light.",
-  "A move-up in progress: rings opened and the hair re-set at the root.",
-  "Finished and styled into curls before the client leaves.",
-] as const;
+  "detail-1",
+  "detail-2",
+  "detail-3",
+  "detail-4",
+  "detail-5",
+  "detail-6",
+  "detail-7",
+  "detail-8",
+] as const satisfies readonly PhotoId[];
 
 export default function GalleryPage() {
+  const { filled, total } = photoProgress();
+
   return (
     <>
       <BreadcrumbJsonLd
@@ -105,8 +113,8 @@ export default function GalleryPage() {
             <Reveal key={item.label} direction="zoom-blur" delay={(i % 2) * 90}>
               <BeforeAfter
                 label={item.label}
-                beforeCaption={item.before}
-                afterCaption={item.after}
+                beforeId={item.beforeId}
+                afterId={item.afterId}
               />
             </Reveal>
           ))}
@@ -120,10 +128,10 @@ export default function GalleryPage() {
           lede="The bond, the blend, the match. The parts you only see if someone shows you."
         />
         <div className="mt-12 columns-1 gap-5 sm:columns-2 lg:columns-3 [&>div]:mb-5 [&>div]:break-inside-avoid">
-          {DETAILS.map((caption, i) => (
-            <Reveal key={caption} direction="zoom" delay={(i % 3) * 70}>
+          {DETAILS.map((id, i) => (
+            <Reveal key={id} direction="zoom" delay={(i % 3) * 70}>
               <PhotoFrame
-                caption={caption}
+                id={id}
                 ratio={i % 3 === 1 ? "1 / 1" : "3 / 4"}
                 index={i}
               />
@@ -140,13 +148,17 @@ export default function GalleryPage() {
             </span>
             <div className="flex-1">
               <h2 className="font-display text-xl">
-                These frames are waiting for Annie&rsquo;s photographs
+                {filled === 0
+                  ? "These frames are waiting for Annie's photographs"
+                  : `${filled} of ${total} photographs added`}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Rather than fill the gallery with stock pictures of other
                 people&rsquo;s work, each frame says exactly which shot belongs
                 in it. Drop the files into{" "}
-                <code className="font-technical text-primary">public/annie/</code>{" "}
+                <code className="font-technical text-primary">public/annie/</code>,
+                add a line to{" "}
+                <code className="font-technical text-primary">annie-photos.ts</code>,
                 and the slots become photographs without anything shifting.
               </p>
             </div>

@@ -3,6 +3,8 @@
 import { useCallback, useId, useRef, useState } from "react";
 import { MoveHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PhotoId } from "@/lib/annie-photos";
+import { brief, photo } from "@/lib/annie-photos";
 import { PhotoFrame } from "./ui";
 
 /**
@@ -18,6 +20,8 @@ import { PhotoFrame } from "./ui";
  * compositor handles — dragging never triggers layout.
  */
 export function BeforeAfter({
+  beforeId,
+  afterId,
   beforeCaption,
   afterCaption,
   beforeSrc,
@@ -25,14 +29,23 @@ export function BeforeAfter({
   label,
   className,
 }: {
-  beforeCaption: string;
-  afterCaption: string;
+  /** Slot ids in the photo manifest, for both halves. */
+  beforeId?: PhotoId;
+  afterId?: PhotoId;
+  beforeCaption?: string;
+  afterCaption?: string;
   beforeSrc?: string;
   afterSrc?: string;
   /** What this transformation is, for the slider's accessible name. */
   label: string;
   className?: string;
 }) {
+  const beforeText = beforeCaption ?? (beforeId ? brief(beforeId) : "");
+  const afterText = afterCaption ?? (afterId ? brief(afterId) : "");
+  // Both halves must be real photographs before the written briefs go.
+  const bothReal =
+    Boolean(beforeSrc ?? photo(beforeId)) && Boolean(afterSrc ?? photo(afterId));
+
   const [position, setPosition] = useState(50);
   const id = useId();
   const frameRef = useRef<HTMLDivElement>(null);
@@ -60,9 +73,10 @@ export function BeforeAfter({
         {/* `still` matters here: a slow push on one layer and not the
             other would drift the two halves out of register. */}
         <PhotoFrame
-          caption={afterCaption}
+          id={afterId}
+          caption={afterText}
           src={afterSrc}
-          alt={afterSrc ? `After: ${label}` : undefined}
+          alt={`After: ${label}`}
           ratio="4 / 3"
           className="rounded-none border-0"
           index={1}
@@ -77,7 +91,8 @@ export function BeforeAfter({
           style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
         >
           <PhotoFrame
-            caption={beforeCaption}
+            id={beforeId}
+            caption={beforeText}
             src={beforeSrc}
             ratio="4 / 3"
             className="h-full rounded-none border-0"
@@ -143,15 +158,15 @@ export function BeforeAfter({
         </div>
         {/* The frames carry no overlay of their own here, so the two
             photographs are described below instead. */}
-        {beforeSrc && afterSrc ? null : (
+        {bothReal ? null : (
           <dl className="mt-3 grid gap-2 text-xs leading-relaxed text-muted-foreground sm:grid-cols-2">
             <div>
               <dt className="annie-label text-[0.55rem]">Photo slot &mdash; before</dt>
-              <dd className="mt-1">{beforeCaption}</dd>
+              <dd className="mt-1">{beforeText}</dd>
             </div>
             <div>
               <dt className="annie-label text-[0.55rem]">Photo slot &mdash; after</dt>
-              <dd className="mt-1">{afterCaption}</dd>
+              <dd className="mt-1">{afterText}</dd>
             </div>
           </dl>
         )}

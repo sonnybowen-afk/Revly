@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PhotoId } from "@/lib/annie-photos";
+import { brief, photo } from "@/lib/annie-photos";
+import { Magnetic, WordReveal } from "./motion";
 import { Reveal } from "./reveal";
 
 /** A page band. Generous vertical rhythm — this is a marketing site. */
@@ -54,11 +57,16 @@ export function AnnieHeading({
       {label ? <p className="annie-label">{label}</p> : null}
       <Tag
         className={cn(
-          "mt-4 text-balance font-display text-[2.1rem] leading-[1.06] md:text-[3rem]",
+          "mt-4 font-display text-[2.1rem] leading-[1.06] md:text-[3rem]",
+          // text-balance and the word masks fight each other, so a
+          // word-revealed heading keeps its own natural wrapping.
+          typeof title === "string" ? "text-pretty" : "text-balance",
           centered ? "mx-auto max-w-[22ch]" : "max-w-[24ch]",
         )}
       >
-        {title}
+        {/* A plain string gets the word-by-word reveal; a heading built
+            from markup (a gilt span, a number) is rendered as given. */}
+        {typeof title === "string" ? <WordReveal text={title} /> : title}
       </Tag>
       {lede ? (
         <p
@@ -108,9 +116,15 @@ export function AnnieLink({
   className,
   children,
   arrow = false,
+  /** Off for links inside dense copy, where a leaning target is noise. */
+  magnetic = true,
   ...props
-}: ComponentProps<typeof Link> & { tone?: ButtonTone; arrow?: boolean }) {
-  return (
+}: ComponentProps<typeof Link> & {
+  tone?: ButtonTone;
+  arrow?: boolean;
+  magnetic?: boolean;
+}) {
+  const link = (
     <Link className={cn(BUTTON_BASE, TONE[tone], className)} {...props}>
       {children}
       {arrow ? (
@@ -121,6 +135,9 @@ export function AnnieLink({
       ) : null}
     </Link>
   );
+  // Magnetic is a no-op on touch and under reduced motion, so this
+  // costs nothing where it would not be wanted.
+  return magnetic ? <Magnetic>{link}</Magnetic> : link;
 }
 
 /** A figure with its label. Used across the trust bars. */
@@ -161,6 +178,7 @@ export function Stat({
  * so nothing shifts when you do.
  */
 export function PhotoFrame({
+  id,
   caption,
   ratio = "3 / 4",
   src,
@@ -176,8 +194,14 @@ export function PhotoFrame({
    */
   hideCaption = false,
 }: {
-  /** What photograph goes here. Shown while the slot is empty. */
-  caption: string;
+  /**
+   * The slot's id in the photo manifest. Give this and the frame
+   * resolves its own photograph and caption — adding the file to
+   * `annie-photos.ts` turns the slot into an image with no change here.
+   */
+  id?: PhotoId;
+  /** Overrides the manifest's brief. Optional when `id` is given. */
+  caption?: string;
   ratio?: string;
   src?: string;
   alt?: string;
@@ -187,7 +211,12 @@ export function PhotoFrame({
   still?: boolean;
   hideCaption?: boolean;
 }) {
-  if (src) {
+  const fromManifest = photo(id);
+  const resolvedSrc = src ?? fromManifest?.src;
+  const resolvedCaption = caption ?? (id ? brief(id) : "");
+  const resolvedAlt = alt ?? fromManifest?.alt ?? resolvedCaption;
+
+  if (resolvedSrc) {
     return (
       <span
         className={cn(
@@ -199,8 +228,8 @@ export function PhotoFrame({
             export runs without the image optimiser, so a plain <img> with an
             explicit aspect-ratio is the honest choice here. */}
         <img
-          src={src}
-          alt={alt ?? caption}
+          src={resolvedSrc}
+          alt={resolvedAlt}
           style={{ aspectRatio: ratio }}
           loading="lazy"
           decoding="async"
@@ -218,7 +247,7 @@ export function PhotoFrame({
     <div
       style={{ aspectRatio: ratio }}
       className={cn(
-        "annie-zoom-frame annie-sheen relative w-full rounded-2xl border border-card-border bg-card",
+        "annie-zoom-frame annie-sheen relative w-full rounded-2xl border border-card-border bg-background-subtle",
         className,
       )}
     >
@@ -228,10 +257,10 @@ export function PhotoFrame({
         style={{
           background:
             hue === 0
-              ? "radial-gradient(120% 82% at 28% 8%, rgba(242,211,132,0.26), rgba(184,154,232,0.10) 52%, transparent 74%)"
+              ? "linear-gradient(155deg, #fdf3e4 0%, #f9e6ea 55%, #fbeee2 100%)"
               : hue === 1
-                ? "radial-gradient(120% 82% at 72% 16%, rgba(240,184,196,0.24), rgba(242,211,132,0.10) 54%, transparent 74%)"
-                : "radial-gradient(120% 82% at 50% 0%, rgba(184,154,232,0.22), rgba(240,184,196,0.12) 48%, transparent 72%)",
+                ? "linear-gradient(155deg, #fce9ee 0%, #fdf4e6 58%, #f8e3e9 100%)"
+                : "linear-gradient(155deg, #fbefe2 0%, #f9e9ef 48%, #fdf6ec 100%)",
         }}
       />
       {/* A few strands, so an empty frame still reads as hair. */}
@@ -239,24 +268,24 @@ export function PhotoFrame({
         aria-hidden="true"
         viewBox="0 0 100 130"
         preserveAspectRatio="none"
-        className="absolute inset-0 h-full w-full opacity-45"
+        className="absolute inset-0 h-full w-full opacity-60"
       >
         {[18, 34, 50, 66, 82].map((x, i) => (
           <path
             key={x}
             d={`M ${x} -5 C ${x + (i % 2 ? 14 : -14)} 40, ${x - (i % 2 ? 12 : -12)} 82, ${x + (i % 2 ? 6 : -6)} 135`}
             fill="none"
-            stroke="#f2d384"
+            stroke="#c9a227"
             strokeWidth="0.5"
-            opacity={0.3 + i * 0.09}
+            opacity={0.28 + i * 0.09}
           />
         ))}
       </svg>
       {hideCaption ? null : (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-4 pt-10">
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white/95 to-transparent p-4 pt-10">
           <p className="annie-label text-[0.6rem]">Photo slot</p>
           <p className="mt-1 text-sm leading-snug text-muted-foreground">
-            {caption}
+            {resolvedCaption}
           </p>
         </div>
       )}

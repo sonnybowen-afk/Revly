@@ -94,7 +94,7 @@ export default function ReviewsPage() {
           {REVIEW_THEMES.map((theme, i) => (
             <Reveal key={theme.id} direction="zoom" delay={i * 80}>
               <article className="annie-card annie-lift h-full p-6">
-                <span className="font-display text-4xl text-primary/30">
+                <span className="font-display text-4xl text-primary/75">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h2 className="mt-4 font-display text-xl">{theme.label}</h2>

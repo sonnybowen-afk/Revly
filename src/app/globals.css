@@ -316,77 +316,84 @@
    tokens Revly uses, so every `bg-background` / `text-muted-foreground`
    utility keeps working and simply comes out in the salon's colours.
 
-   Direction : Extravagant. Obsidian with a violet undertone, champagne
-   gold, rose gold and amethyst. Glass, gilt and glow — no texture.
+   Direction : Classic salon. Warm ivory, antique gold, blush pink.
+   Light, generous and unhurried — the register of a good salon, not of
+   a nightclub.
 
-     Obsidian-violet (#08060D) not brown-black — a warm brown ground
-       under gold reads earthy and tortoiseshell. A violet undertone
-       reads like a jewellery box, which is the register we want.
-     Gold is CHAMPAGNE (#F2D384), not antique. Brighter, cooler, richer.
-     Two jewel accents, rose gold and amethyst, used together in
-       gradients so nothing is ever flatly one colour.
-     Surfaces are polished: gilt gradient borders, sheen sweeps and
-       glow. No grain, no noise, nothing matte.
-     Radii are generous (1.25rem+). Extravagance is not tight.
+     Warm ivory (#FFFBF7) not white — plain white under gold goes grey
+       and clinical. A cream ground makes the gold read as metal.
+     Ink is deep cocoa-plum (#3A2B2E), never black. It carries 13:1 on
+       the canvas while staying soft enough to read as warm.
+     ONE gold, at a value dark enough to be TEXT (#856610). Bright gold
+       on cream is unreadable, so bright gold appears only inside the
+       gilt gradient on large display type, never as small text.
+     Blush is the second voice: soft fills, petals and glow. Never a
+       control, and never load-bearing.
+     Depth is light, not shadow. Cream bands, hairlines and a blush
+       bloom, with shadows kept wide and barely there.
 
-   Contrast, measured against the #08060D canvas:
-     foreground       #F7F2EA   ≈ 18.4:1
-     muted-foreground #ADA4B8   ≈  7.9:1
-     champagne        #F2D384   ≈ 13.1:1
-   All clear of 4.5:1, so body text passes AA anywhere on the page.
+   Contrast, measured and checked pair by pair:
+     ink #3A2B2E on ivory           13.03:1
+     muted #7B6569 on ivory          5.22:1   on cream band  4.92:1
+     gold #856610 on ivory           5.20:1   on gold wash   4.76:1
+     ivory on a gold button          5.22:1
+     border-strong on ivory          3.48:1   (non-text, needs 3)
+   Every pair clears its WCAG threshold, so nothing here relies on
+   the reader having good eyes and a good screen.
    ═══════════════════════════════════════════════════════════════════ */
 
 /* `:has()` lets the salon theme reach <html>, so the browser chrome and
-   the overscroll gutter are dark too — not just the content box. */
+   the overscroll gutter are cream too — not just the content box. */
 :root:has(.annie-root),
 .annie-root {
-  --background: #08060d;
-  --background-subtle: #0e0b16;
-  --foreground: #f7f2ea;
+  --background: #fffbf7;
+  --background-subtle: #fdf3ec;
+  --foreground: #3a2b2e;
 
-  --card: #14101d;
-  --card-foreground: #f7f2ea;
-  --card-border: #2b2338;
+  --card: #ffffff;
+  --card-foreground: #3a2b2e;
+  --card-border: #f0dfd2;
 
-  --muted: #191324;
-  --muted-foreground: #ada4b8;
+  --muted: #f8ede5;
+  --muted-foreground: #7b6569;
 
-  /* Champagne gold is the brand. Nothing competes with it. */
-  --primary: #f2d384;
-  --primary-hover: #fbe7ae;
-  --on-primary: #17110a;
-  --primary-soft: #241c14;
-  --primary-soft-foreground: #fbe7ae;
+  /* Gold is the brand, at a value that can legally carry text. */
+  --primary: #856610;
+  --primary-hover: #6e5409;
+  --on-primary: #fffbf7;
+  --primary-soft: #fbf0dc;
+  --primary-soft-foreground: #6b5310;
 
-  /* Rose gold — a surface tint and a gradient partner, never a control. */
-  --accent: #f0b8c4;
-  --accent-soft: #241820;
-  --accent-soft-foreground: #f7d3da;
+  /* Blush — a surface tint and a gradient partner, never a control. */
+  --accent: #e8a0b4;
+  --accent-soft: #fdeef2;
+  --accent-soft-foreground: #8c3f55;
 
-  --success: #8fd9b6;
-  --success-soft: #122219;
-  --success-soft-foreground: #b4e6ce;
+  --success: #1f6a4c;
+  --success-soft: #e9f4ee;
+  --success-soft-foreground: #175139;
 
-  --warning: #f2d384;
-  --warning-soft: #241c14;
-  --warning-soft-foreground: #fbe7ae;
+  --warning: #7a5a0d;
+  --warning-soft: #fbf0dc;
+  --warning-soft-foreground: #6b5310;
 
-  --destructive: #f09a9a;
-  --destructive-soft: #2a1620;
-  --destructive-soft-foreground: #f7c3c3;
+  --destructive: #9a2f3f;
+  --destructive-soft: #fcecef;
+  --destructive-soft-foreground: #7c2533;
 
-  --border: #2b2338;
-  --border-strong: #463a5a;
-  --rule: #f2d384;
-  --ring: #f2d384;
+  --border: #f0dfd2;
+  --border-strong: #a3806a;
+  --rule: #856610;
+  --ring: #856610;
 
-  --chart-bar: #f2d384;
-  --chart-bar-quiet: #382c4a;
-  --chart-grid: #2b2338;
+  --chart-bar: #b8901f;
+  --chart-bar-quiet: #f0e2c4;
+  --chart-grid: #f0dfd2;
 
-  --shadow-overlay: 0 40px 100px -35px rgba(0, 0, 0, 0.9);
+  /* Wide and faint. On a light ground a tight shadow reads as dirt. */
+  --shadow-overlay: 0 30px 80px -40px rgba(122, 90, 70, 0.35);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .annie-root {
@@ -398,24 +405,26 @@
   --font-technical: var(--font-jetbrains), ui-monospace, "SFMono-Regular",
     Menlo, monospace;
 
-  /* The three jewels, and the alphas the gilt details are tuned to. */
-  --champagne: #f2d384;
-  --rose-gold: #f0b8c4;
-  --amethyst: #b89ae8;
-  --gold-hairline: rgba(242, 211, 132, 0.26);
-  --gold-glow: rgba(242, 211, 132, 0.18);
-  --rose-glow: rgba(240, 184, 196, 0.14);
-  --amethyst-glow: rgba(184, 154, 232, 0.14);
+  /* Decorative golds and blushes. These are for fills, edges and glow —
+     never for text, which uses --primary above. */
+  --gold-bright: #c9a227;
+  --gold-pale: #e8cf8a;
+  --blush: #e8a0b4;
+  --blush-pale: #f7d6de;
+  --gold-hairline: rgba(133, 102, 16, 0.22);
+  --gold-glow: rgba(201, 162, 39, 0.16);
+  --rose-glow: rgba(232, 160, 180, 0.2);
 
-  /* The house gradient. Used on borders, sheens and display type. */
+  /* The house gradient, for large display type and gilt edges. Kept in
+     the mid-to-deep golds so it stays legible against cream. */
   --gilt: linear-gradient(
     100deg,
-    #c9a44e 0%,
-    #f7e3b0 22%,
-    #f2d384 42%,
-    #f0b8c4 62%,
-    #b89ae8 82%,
-    #c9a44e 100%
+    #9a7418 0%,
+    #c9a227 20%,
+    #8a6a12 42%,
+    #c98fa4 62%,
+    #b8901f 82%,
+    #8a6a12 100%
   );
 
   background-color: var(--background);
@@ -450,8 +459,8 @@
     color: var(--primary);
   }
 
-  /* The full gilt gradient across display type. Falls back to solid
-     champagne where background-clip: text is unsupported. */
+  /* The gilt gradient across display type. Falls back to solid gold
+     where background-clip: text is unsupported. */
   .text-gilt {
     color: var(--primary);
     background-image: var(--gilt);
@@ -467,15 +476,11 @@
   /* ── Surfaces ─────────────────────────────────────────────────── */
   .annie-card {
     position: relative;
-    background-image:
-      linear-gradient(
-        168deg,
-        color-mix(in srgb, var(--card) 100%, transparent) 0%,
-        color-mix(in srgb, var(--background-subtle) 92%, transparent) 100%
-      );
+    background-color: var(--card);
     border: 1px solid var(--card-border);
     border-radius: 1.25rem;
     overflow: hidden;
+    box-shadow: 0 18px 44px -32px rgba(122, 90, 70, 0.3);
   }
   /* A gilt filament along the top edge — the house detail. */
   .annie-card::before {
@@ -488,7 +493,7 @@
       90deg,
       transparent,
       var(--gold-hairline) 18%,
-      rgba(242, 211, 132, 0.75) 50%,
+      rgba(201, 162, 39, 0.85) 50%,
       var(--gold-hairline) 82%,
       transparent
     );
@@ -507,7 +512,7 @@
     border-radius: inherit;
     padding: 1px;
     background: var(--gilt);
-    opacity: 0.55;
+    opacity: 0.6;
     /* Punches the middle out so only the 1px ring paints. */
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
@@ -521,9 +526,9 @@
   }
 
   .annie-glass {
-    background-color: color-mix(in srgb, var(--card) 68%, transparent);
-    backdrop-filter: blur(18px) saturate(1.5);
-    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    background-color: color-mix(in srgb, var(--background) 82%, transparent);
+    backdrop-filter: blur(18px) saturate(1.25);
+    -webkit-backdrop-filter: blur(18px) saturate(1.25);
     border: 1px solid var(--card-border);
   }
 
@@ -531,7 +536,7 @@
     border-top: 1px solid var(--gold-hairline);
   }
 
-  /* A light sweeping across a surface. Extravagance, cheaply. */
+  /* A light sweeping across a surface. */
   .annie-sheen::after {
     content: "";
     position: absolute;
@@ -540,8 +545,8 @@
     background: linear-gradient(
       100deg,
       transparent 30%,
-      rgba(255, 255, 255, 0.07) 45%,
-      rgba(242, 211, 132, 0.12) 50%,
+      rgba(255, 255, 255, 0.5) 45%,
+      rgba(201, 162, 39, 0.16) 50%,
       transparent 68%
     );
     background-size: 280% 100%;
@@ -603,7 +608,9 @@
     will-change: auto;
   }
 
-  /* ── Motion ───────────────────────────────────────────────────── */
+  /* ── Live motion ──────────────────────────────────────────────────
+     Ambient animation that never stops, so the page is alive rather
+     than merely animated-once-on-scroll. All transform and opacity. */
   .annie-float {
     animation: annie-float 14s ease-in-out infinite;
   }
@@ -616,6 +623,20 @@
   .annie-shimmer {
     background-size: 240% 100%;
     animation: annie-shimmer 7s ease-in-out infinite;
+  }
+  /* A petal falling and turning. Each one is given its own duration,
+     delay and drift inline, so no two share a path. */
+  .annie-petal {
+    animation: annie-petal var(--petal-duration, 18s) linear infinite;
+    animation-delay: var(--petal-delay, 0s);
+  }
+  /* A slow gold pulse, for the "open now" dot and live indicators. */
+  .annie-pulse {
+    animation: annie-pulse 2.6s ease-in-out infinite;
+  }
+  /* A ring that expands and fades out from under a dot. */
+  .annie-ping {
+    animation: annie-ping 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
   /* Draws the hero's hair-strand paths on once, then leaves them. */
   .annie-draw {
@@ -631,6 +652,30 @@
   /* Slow continuous push on a still image, so a photo is never static. */
   .annie-kenburns {
     animation: annie-kenburns 26s ease-in-out infinite alternate;
+  }
+  /* A hairline that keeps drawing itself across, left to right. */
+  .annie-trace {
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--gold-bright),
+      transparent
+    );
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    animation: annie-trace 7s ease-in-out infinite;
+  }
+
+  /* Hides the native cursor for the custom one. Applied from
+     <CustomCursor> after it mounts, never from here — if the script
+     never runs, the visitor keeps an ordinary cursor rather than none.
+     Text fields are exempt: a dot cannot place an insertion point. */
+  .annie-cursor-none,
+  .annie-cursor-none a,
+  .annie-cursor-none button,
+  .annie-cursor-none summary,
+  .annie-cursor-none [role="button"] {
+    cursor: none;
   }
 
   /* Zoom on hover, clipped by the parent. The element's own footprint
@@ -658,10 +703,8 @@
   @media (hover: hover) {
     .annie-lift:hover {
       transform: translate3d(0, -6px, 0) scale(1.018);
-      border-color: rgba(242, 211, 132, 0.45);
-      box-shadow:
-        0 30px 70px -34px rgba(242, 211, 132, 0.45),
-        0 0 0 1px rgba(242, 211, 132, 0.12);
+      border-color: rgba(201, 162, 39, 0.6);
+      box-shadow: 0 32px 64px -34px rgba(122, 90, 70, 0.45);
     }
   }
 }
@@ -685,6 +728,32 @@
 @keyframes annie-sheen {
   0%, 100% { background-position: 180% 50%; }
   55% { background-position: -80% 50%; }
+}
+@keyframes annie-trace {
+  0%, 100% { background-position: -60% 0; }
+  50% { background-position: 160% 0; }
+}
+@keyframes annie-petal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -10%, 0) rotate(0deg);
+  }
+  12% { opacity: var(--petal-opacity, 0.5); }
+  88% { opacity: var(--petal-opacity, 0.5); }
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--petal-drift, 40px), 110vh, 0)
+      rotate(var(--petal-spin, 220deg));
+  }
+}
+@keyframes annie-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@keyframes annie-ping {
+  0% { transform: scale(1); opacity: 0.55; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
 }
 @keyframes annie-draw {
   to { stroke-dashoffset: 0; }
@@ -716,13 +785,21 @@
       .annie-shimmer,
       .annie-draw,
       .annie-hero-zoom,
-      .annie-kenburns
+      .annie-kenburns,
+      .annie-petal,
+      .annie-pulse,
+      .annie-ping,
+      .annie-trace
     ),
   .annie-root .annie-sheen::after {
     animation: none;
   }
   .annie-root .annie-draw {
     stroke-dashoffset: 0;
+  }
+  /* Petals exist only to move. With motion off they are just clutter. */
+  .annie-root .annie-petal {
+    display: none;
   }
   .annie-root .annie-lift:hover,
   .annie-root .annie-zoom-frame:hover .annie-zoom-target {

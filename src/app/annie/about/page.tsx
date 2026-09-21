@@ -102,11 +102,7 @@ export default function AboutPage() {
             </div>
 
             <Reveal direction="zoom" delay={120}>
-              <PhotoFrame
-                caption="Annie in the studio: portrait at the chair, market light behind."
-                ratio="4 / 5"
-                index={1}
-              />
+              <PhotoFrame id="annie-portrait" ratio="4 / 5" index={1} />
             </Reveal>
           </div>
         </div>

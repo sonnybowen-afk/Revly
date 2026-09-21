@@ -169,11 +169,7 @@ export default function ContactPage() {
 
             <Reveal direction="zoom" delay={120}>
               <div className="space-y-6">
-                <PhotoFrame
-                  caption="The shopfront inside the market, so people know what to look for."
-                  ratio="4 / 3"
-                  index={0}
-                />
+                <PhotoFrame id="shopfront" ratio="4 / 3" index={0} />
                 <div className="annie-card p-6">
                   <h2 className="annie-label">Opening hours</h2>
                   <dl className="mt-4 divide-y divide-border">

@@ -12,6 +12,7 @@ import { BeforeAfter } from "@/components/annie/before-after";
 import { CountUp } from "@/components/annie/count-up";
 import { Faq, FaqJsonLd } from "@/components/annie/faq";
 import { Marquee } from "@/components/annie/marquee";
+import { Parallax, WordReveal } from "@/components/annie/motion";
 import { Reveal } from "@/components/annie/reveal";
 import { Stars } from "@/components/annie/review-wall";
 import { OpenBadge } from "@/components/annie/open-badge";
@@ -186,12 +187,17 @@ function Hero() {
             </p>
           </Reveal>
 
-          <Reveal direction="zoom-out" delay={90}>
-            <h1 className="mt-7 text-balance font-display text-[2.75rem] leading-[1.02] md:text-[4.5rem]">
-              Hair that looks like it{" "}
-              <span className="text-gilt annie-shimmer italic">grew there</span>
-            </h1>
-          </Reveal>
+          {/* Word by word, each rising out of its own mask. The words
+              stay real text, so find-in-page and screen readers are
+              unaffected — which is what most split-text effects break. */}
+          <h1 className="mt-7 font-display text-[2.75rem] leading-[1.02] md:text-[4.5rem]">
+            <WordReveal text="Hair that looks like it" delay={140} />{" "}
+            <WordReveal
+              text="grew there"
+              wordClassName="text-gilt annie-shimmer italic"
+              delay={340}
+            />
+          </h1>
 
           <Reveal direction="zoom-soft" delay={170}>
             <p className="mt-7 max-w-[54ch] text-pretty text-lg leading-relaxed text-muted-foreground">
@@ -226,11 +232,12 @@ function Hero() {
           {/* The feature panel. It balances the composition and gives
               Annie the most valuable photo placement on the site. */}
           <Reveal direction="zoom" delay={260} className="hidden lg:block">
+            <Parallax speed={0.05}>
             <div className="annie-gilt-edge annie-hero-zoom relative p-2">
               {/* The overlay card below sits across the frame, so the
                   frame's own caption moves out from under it. */}
               <PhotoFrame
-                caption="Hero shot"
+                id="hero"
                 ratio="4 / 5"
                 index={1}
                 hideCaption
@@ -247,6 +254,7 @@ function Hero() {
                 </p>
               </div>
             </div>
+            </Parallax>
             <p className="mt-10 pl-2 text-xs leading-relaxed text-muted-foreground">
               <span className="annie-label text-[0.55rem]">Photo slot</span>{" "}
               One finished head of hair, three-quarter profile, market light
@@ -445,7 +453,7 @@ function Process() {
           >
             <>
               <div className="flex items-baseline justify-between gap-3">
-                <span className="font-display text-4xl text-primary/30">
+                <span className="font-display text-4xl text-primary/75">
                   {stage.step}
                 </span>
                 <span className="annie-label text-[0.55rem]">{stage.time}</span>
@@ -482,36 +490,24 @@ function Work() {
         <Reveal direction="zoom-blur">
           <BeforeAfter
             label="Nano rings, 20 inch, full head"
-            beforeCaption="Before: hair at the client's own length, parted centre, daylight."
-            afterCaption="After: nano rings fitted and cut in, same parting and same light."
+            beforeId="ba-nano-before"
+            afterId="ba-nano-after"
           />
         </Reveal>
         <Reveal direction="zoom-blur" delay={90}>
           <BeforeAfter
             label="LA weave, 22 inch, mega volume"
-            beforeCaption="Before: fine ponytail, shot from behind in daylight."
-            afterCaption="After: LA weave row fitted, blended and styled into waves."
+            beforeId="ba-weave-before"
+            afterId="ba-weave-after"
           />
         </Reveal>
       </div>
 
       <Reveal delay={160}>
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          <PhotoFrame
-            caption="Close detail of a nano bond at the root, showing how small it sits."
-            ratio="1 / 1"
-            index={0}
-          />
-          <PhotoFrame
-            caption="A colour match held against the client's own ends in daylight."
-            ratio="1 / 1"
-            index={1}
-          />
-          <PhotoFrame
-            caption="The studio inside Arndale Market — chair, mirror and light."
-            ratio="1 / 1"
-            index={2}
-          />
+          <PhotoFrame id="home-detail-bond" ratio="1 / 1" index={0} />
+          <PhotoFrame id="home-detail-match" ratio="1 / 1" index={1} />
+          <PhotoFrame id="home-studio" ratio="1 / 1" index={2} />
         </div>
       </Reveal>
     </AnnieSection>
@@ -632,11 +628,7 @@ function Visit() {
         </div>
 
         <Reveal direction="zoom" delay={120}>
-          <PhotoFrame
-            caption="The studio: the chair, the mirror and the market light behind it."
-            ratio="4 / 5"
-            index={2}
-          />
+          <PhotoFrame id="visit-studio" ratio="4 / 5" index={2} />
         </Reveal>
       </div>
     </AnnieSection>
