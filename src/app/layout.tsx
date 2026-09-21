@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Newsreader, Public_Sans } from "next/font/google";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { THEME_SCRIPT } from "@/components/theme-toggle";
 import "./globals.css";
 
@@ -58,6 +56,12 @@ export const viewport: Viewport = {
   ],
 };
 
+/**
+ * Root layout: <html>, <body>, the theme boot script and the global
+ * stylesheet, and nothing else. Per-site chrome lives one level down —
+ * app/(revly)/layout.tsx for the revision hub, app/annie/layout.tsx for the
+ * salon site — so the two can look nothing alike.
+ */
 export default function RootLayout({
   children,
 }: {
@@ -72,19 +76,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className="min-h-dvh flex flex-col">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-on-primary focus:font-semibold"
-        >
-          Skip to main content
-        </a>
-        <SiteHeader />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
-      </body>
+      <body className="min-h-dvh flex flex-col">{children}</body>
     </html>
   );
 }
