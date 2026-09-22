@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-      # Deploys straight from the working branch too, so the site can go
-      # live before the branch is merged. Drop this line once it is.
-      - claude/annie-secret-hair-website-4uoq38
   workflow_dispatch:
 
 permissions:
