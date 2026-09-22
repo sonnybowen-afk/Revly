@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Camera, Instagram } from "lucide-react";
 import { Atmosphere } from "@/components/annie/atmosphere";
 import { BeforeAfter } from "@/components/annie/before-after";
+import { BondViewer } from "@/components/annie/bond-viewer";
 import { BreadcrumbJsonLd } from "@/components/annie/json-ld";
 import { Reveal } from "@/components/annie/reveal";
 import {
@@ -11,7 +12,6 @@ import {
   PhotoFrame,
 } from "@/components/annie/ui";
 import type { PhotoId } from "@/lib/annie-photos";
-import { photoProgress } from "@/lib/annie-photos";
 import { SALON } from "@/lib/annie-salon";
 
 export const metadata: Metadata = {
@@ -76,20 +76,16 @@ const TRANSFORMATIONS = [
   afterId: PhotoId;
 }[];
 
-/** Four real detail shots, then the four still wanted. */
+/** Every detail shot on the page, all of them real. */
 const DETAILS = [
   "detail-waves-blonde",
   "detail-crown-platinum",
   "detail-waves-copper",
   "studio-mirror",
   "shopfront",
-  "detail-bond",
-  "detail-colour-match",
 ] as const satisfies readonly PhotoId[];
 
 export default function GalleryPage() {
-  const { filled, total } = photoProgress();
-
   return (
     <>
       <BreadcrumbJsonLd
@@ -160,31 +156,19 @@ export default function GalleryPage() {
         </div>
       </AnnieSection>
 
-      <AnnieSection className="py-16">
-        <Reveal>
-          <div className="annie-card mx-auto flex max-w-3xl flex-col items-center gap-5 p-8 text-center md:flex-row md:text-left">
-            <span className="grid size-12 shrink-0 place-items-center rounded-full border border-[var(--gold-hairline)] bg-primary-soft">
-              <Camera aria-hidden="true" className="size-5 text-primary" />
-            </span>
-            <div className="flex-1">
-              <h2 className="font-display text-xl">
-                {filled === 0
-                  ? "These frames are waiting for Annie's photographs"
-                  : `${filled} of ${total} photo slots filled`}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Rather than fill the gallery with stock pictures of other
-                people&rsquo;s work, each frame says exactly which shot belongs
-                in it. Drop the files into{" "}
-                <code className="font-technical text-primary">public/annie/</code>,
-                add a line to{" "}
-                <code className="font-technical text-primary">annie-photos.ts</code>,
-                and the slots become photographs without anything shifting.
-              </p>
-            </div>
+      <AnnieSection className="pt-0">
+        <AnnieHeading
+          label="The part a photo cannot show"
+          title="Zoom into the bond itself"
+          lede="No picture of a finished head shows you the bond — that is rather the point of a good one. So this is drawn instead, roughly to scale, and it says so."
+        />
+        <Reveal delay={120}>
+          <div className="mx-auto mt-12 max-w-3xl">
+            <BondViewer />
           </div>
         </Reveal>
       </AnnieSection>
+
     </>
   );
 }

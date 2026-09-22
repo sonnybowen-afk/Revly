@@ -14,6 +14,12 @@
  * On alt text: describe what the photograph *shows* — the hair, the
  * length, the angle. "Hair extensions" is not alt text.
  *
+ * Every slot here is filled. The one thing no photograph shows is the
+ * bond itself — you cannot see a nano ring in a picture of a finished
+ * head — so rather than hold five macro-shot slots open indefinitely,
+ * that job went to <BondViewer>, a drawn illustration that says it is
+ * one. See components/annie/bond-viewer.tsx.
+ *
  * ── On what these photographs do and do not claim ─────────────────────
  * The images in place came from Annie's own Instagram, supplied by the
  * client. Her posts do not record which method was fitted, how many
@@ -21,10 +27,9 @@
  * neither do the labels on the page: they describe the colour and what
  * is visibly different between the two frames, and nothing else.
  *
- * That is why the transformation slots are named by colour rather than by
- * method, and why the five `method-*` slots are still empty — a photo of
- * a finished head is not a photo of a nano bond, and filing it under one
- * would be a claim the photograph does not support.
+ * That is why the transformation slots are named by colour rather than
+ * by method: a photo of a finished head is not a photo of a nano bond,
+ * and filing it under one would be a claim the photograph cannot support.
  */
 
 export type Photo = {
@@ -59,17 +64,8 @@ export const PHOTO_BRIEFS = {
   "detail-crown-platinum": "A platinum set from the crown down, showing the blend.",
   "studio-mirror": "The studio: the gilt mirror, the chair and the light.",
 
-  // ── Still wanted ────────────────────────────────────────────────
-  "detail-bond": "A bond at the root, shot close enough to show the scale. Still needed.",
-  "detail-colour-match": "A shade match held against the client's own ends in daylight. Still needed.",
+  // ── The unit itself ─────────────────────────────────────────────
   "shopfront": "The shopfront inside the market, so people know what to look for.",
-
-  // ── One per method. Each needs the bond itself, not a finished head ──
-  "method-la-weave": "LA Weave: the ring row and the weft sewn onto it.",
-  "method-nano-rings": "Nano Rings: a nano bond at the root, and the finished blend.",
-  "method-micro-rings": "Micro Rings: a micro bond at the root, and the finished blend.",
-  "method-tape-in": "Tape Hair Extensions: a tape pair at the root, showing how flat it sits.",
-  "method-mini-tip": "Mini-Tip: a tipped strand at the root, and the finished blend.",
 } as const;
 
 export type PhotoId = keyof typeof PHOTO_BRIEFS;

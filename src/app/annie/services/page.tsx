@@ -2,15 +2,14 @@ import type { Metadata } from "next";
 import { Check, Clock, RefreshCw, Sparkles, X } from "lucide-react";
 import { Atmosphere } from "@/components/annie/atmosphere";
 import { BreadcrumbJsonLd } from "@/components/annie/json-ld";
+import { BondViewer } from "@/components/annie/bond-viewer";
 import { PriceCalculator } from "@/components/annie/price-estimator";
 import { Reveal } from "@/components/annie/reveal";
 import {
   AnnieHeading,
   AnnieLink,
   AnnieSection,
-  PhotoFrame,
 } from "@/components/annie/ui";
-import type { PhotoId } from "@/lib/annie-photos";
 import { HAIR_TYPE_LABELS, METHODS } from "@/lib/annie-methods";
 import type { HairType } from "@/lib/annie-methods";
 import {
@@ -251,12 +250,11 @@ export default function ServicesPage() {
                   </Reveal>
                 </div>
 
+                {/* A drawn bond rather than a photo slot: the macro
+                    shot this needs does not exist, and the illustration
+                    explains the mechanism better than a still would. */}
                 <Reveal direction="zoom" delay={120}>
-                  <PhotoFrame
-                    id={`method-${method.id}` as PhotoId}
-                    ratio="4 / 5"
-                    index={i}
-                  />
+                  <BondViewer initialMethod={method.id} />
                 </Reveal>
               </div>
             </article>

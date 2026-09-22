@@ -10,6 +10,7 @@ import {
   REVIEW_THEMES,
   averageRating,
   filterReviews,
+  ratedReviews,
   ratingBreakdown,
   reviewedMethodIds,
 } from "./annie-reviews.ts";
@@ -25,14 +26,41 @@ const review = (over: Partial<Review> & Pick<Review, "id">): Review => ({
 });
 
 describe("review honesty", () => {
-  it("does not claim the sample rows are real reviews", () => {
-    assert.equal(REVIEWS_VERIFIED, false);
+  it("ships real client messages, not placeholders", () => {
+    assert.equal(REVIEWS_VERIFIED, true);
+    assert.ok(REVIEWS.length > 0);
+    for (const r of REVIEWS) {
+      assert.doesNotMatch(r.body, /placeholder/i, `${r.id}`);
+      assert.ok(r.body.length > 40, `${r.id} should be a real quote`);
+    }
   });
 
-  it("marks every shipped row as a sample", () => {
+  it("never invents a star rating for an unrated message", () => {
+    // Every entry is a WhatsApp or Instagram message. None carried a
+    // rating, so none may claim one.
     for (const r of REVIEWS) {
-      assert.equal(r.source, "Sample", `${r.id} should be flagged as a sample`);
-      assert.match(r.body, /placeholder/i, `${r.id} should read as a placeholder`);
+      if (r.source.includes("message")) {
+        assert.equal(r.rating, null, `${r.id} must not claim a rating`);
+      }
+    }
+  });
+
+  it("says where every testimonial came from", () => {
+    for (const r of REVIEWS) {
+      assert.ok(r.source.length > 0, r.id);
+      assert.match(r.date, /^\d{4}-\d{2}-\d{2}$/, r.id);
+    }
+  });
+
+  it("keeps names to a first name at most", () => {
+    for (const r of REVIEWS) {
+      if (r.author === null) continue;
+      // "Emily M." is fine; "Emily McDermott" is more exposure than a
+      // testimonial needs.
+      assert.ok(
+        /^[A-Z][a-z]+( [A-Z]\.)?$/.test(r.author),
+        `${r.id} author "${r.author}" should be a first name, optionally with an initial`,
+      );
     }
   });
 
@@ -49,10 +77,16 @@ describe("review honesty", () => {
     }
   });
 
-  it("attributes every theme to the platform it was summarised from", () => {
+  it("attributes every theme to where it was drawn from", () => {
     assert.ok(REVIEW_THEMES.length > 0);
+    // Some themes summarise the platform profiles, others are drawn from
+    // the client messages. Either is fine; an unsourced one is not.
+    const allowed = [RATING.source, "Client messages"];
     for (const theme of REVIEW_THEMES) {
-      assert.equal(theme.source, RATING.source);
+      assert.ok(
+        allowed.includes(theme.source),
+        `${theme.id} cites "${theme.source}", which is not a source we hold`,
+      );
     }
   });
 
@@ -99,6 +133,16 @@ describe("ratingBreakdown", () => {
     assert.equal(rows.length, 5);
     assert.ok(rows.every((r) => r.count === 0 && r.percent === 0));
   });
+
+  it("ignores unrated messages rather than counting them as zero", () => {
+    const rows = ratingBreakdown([
+      review({ id: "a", rating: 5 }),
+      review({ id: "b", rating: null }),
+    ]);
+    assert.equal(rows[0].count, 1);
+    assert.equal(rows[0].percent, 100);
+    assert.equal(rows.reduce((n, r) => n + r.count, 0), 1);
+  });
 });
 
 describe("averageRating", () => {
@@ -113,6 +157,20 @@ describe("averageRating", () => {
 
   it("is 0 for an empty list", () => {
     assert.equal(averageRating([]), 0);
+  });
+
+  it("is 0 when nothing carries a rating", () => {
+    assert.equal(averageRating([review({ id: "a", rating: null })]), 0);
+  });
+
+  it("averages only the rated entries", () => {
+    assert.equal(
+      averageRating([
+        review({ id: "a", rating: 4 }),
+        review({ id: "b", rating: null }),
+      ]),
+      4,
+    );
   });
 });
 
@@ -138,6 +196,14 @@ describe("filterReviews", () => {
     assert.deepEqual(
       filterReviews(rows, { minRating: 5 }).map((r) => r.id),
       ["new", "mid"],
+    );
+  });
+
+  it("drops unrated messages from a rating filter", () => {
+    const mixed = [review({ id: "rated", rating: 5 }), review({ id: "msg", rating: null })];
+    assert.deepEqual(
+      filterReviews(mixed, { minRating: 5 }).map((r) => r.id),
+      ["rated"],
     );
   });
 
@@ -171,6 +237,14 @@ describe("filterReviews", () => {
       review({ id: "a", date: "2026-02-02" }),
     ];
     assert.deepEqual(filterReviews(sameDay).map((r) => r.id), ["a", "b"]);
+  });
+});
+
+describe("ratedReviews", () => {
+  it("separates the rated entries from the messages", () => {
+    const mixed = [review({ id: "a", rating: 5 }), review({ id: "b", rating: null })];
+    assert.deepEqual(ratedReviews(mixed).map((r) => r.id), ["a"]);
+    assert.deepEqual(ratedReviews(REVIEWS), []);
   });
 });
 

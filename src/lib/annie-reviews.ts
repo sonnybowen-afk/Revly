@@ -1,109 +1,87 @@
 /**
- * Reviews for the salon site.
+ * What clients have said, and where each thing came from.
  *
- * ── Read this before adding content ───────────────────────────────────
- * Putting invented testimonials on a real business's website is a lie
- * about real customers, so this module will not do it. Two things are
- * kept strictly apart:
+ * ── Two different kinds of evidence, kept apart ───────────────────────
+ *   • The AGGREGATE (RATING in annie-salon.ts) — 4.9 from 82 reviews on
+ *     Treatwell. Star-rated, third-party, and always shown with its
+ *     source and a link.
+ *   • The TESTIMONIALS below — messages clients sent Annie directly, by
+ *     WhatsApp and Instagram, which she published to her own Instagram
+ *     story. They are real and quoted verbatim, but they carry no star
+ *     rating, because a message is not a rated review.
  *
- *   • VERIFIED — the aggregate rating, which is real, and carries the
- *     platform it came from so the page can always say where it got it.
- *   • SAMPLE   — placeholder rows that exist so the wall has something to
- *     lay out during development. REVIEWS_VERIFIED is false while they are
- *     in place, and the UI must show the sample ribbon and must not present
- *     them as customer quotes.
+ * That distinction is why `rating` is nullable. An earlier version of
+ * this file required a 1–5 and would have forced a five-star rating onto
+ * messages that never had one — which is exactly the sort of small
+ * invention that turns a real testimonial into a fake review.
  *
- * To go live: export the real reviews from Treatwell/Fresha/Google into
- * REVIEWS in the same shape, then set REVIEWS_VERIFIED to true. The ribbon
- * disappears on its own. See README-annie.md.
+ * ── Names ─────────────────────────────────────────────────────────────
+ * Reduced to a first name, or a first name and last initial, which is the
+ * convention review platforms use and the least exposure consistent with
+ * the quote still meaning something. One client is unnamed because the
+ * screenshot carried no name; the card says where it came from instead.
+ *
+ * ── Deliberately NOT in the JSON-LD ───────────────────────────────────
+ * These are self-published testimonials without ratings. Marking them up
+ * as schema.org Review nodes invites a manual penalty and would not earn
+ * a rich result anyway. The Treatwell aggregate does that job.
  */
 
 import { RATING } from "./annie-salon.ts";
 
-/** False while REVIEWS holds sample rows rather than imported ones. */
-export const REVIEWS_VERIFIED = false;
+/** True: every entry below is a real client message, quoted verbatim. */
+export const REVIEWS_VERIFIED = true;
 
 export type Review = {
   readonly id: string;
-  /** First name and last initial, as the review platforms publish them. */
-  readonly author: string;
-  readonly rating: 1 | 2 | 3 | 4 | 5;
+  /** First name, or first name and initial. Null when none was given. */
+  readonly author: string | null;
+  /** 1–5 where the source carried a rating; null for a plain message. */
+  readonly rating: 1 | 2 | 3 | 4 | 5 | null;
+  /** Quoted verbatim, typos and all. Do not tidy these up. */
   readonly body: string;
-  /** ISO date, "YYYY-MM-DD". */
+  /** ISO date the salon published it, "YYYY-MM-DD". */
   readonly date: string;
   /** Method id from annie-methods.ts, or null when unstated. */
   readonly methodId: string | null;
+  /** Where it came from, in the visitor's words not ours. */
   readonly source: string;
 };
 
-/**
- * Placeholder rows. Every body here is written as an obvious layout
- * placeholder rather than as a plausible customer voice — that is
- * deliberate, so nothing here can be mistaken for a real review if it ever
- * reaches production by accident.
- */
 export const REVIEWS: readonly Review[] = [
   {
-    id: "sample-1",
-    author: "Sample review",
-    rating: 5,
-    body: "Placeholder row — replace with a real five-star review imported from Treatwell. This text is here to size the card and nothing else.",
-    date: "2026-08-14",
-    methodId: "nano-rings",
-    source: "Sample",
-  },
-  {
-    id: "sample-2",
-    author: "Sample review",
-    rating: 5,
-    body: "Placeholder row — replace with a real review. Long enough to show how a two-line card wraps against a short one on a narrow screen.",
-    date: "2026-07-02",
-    methodId: "la-weave",
-    source: "Sample",
-  },
-  {
-    id: "sample-3",
-    author: "Sample review",
-    rating: 4,
-    body: "Placeholder row — replace with a real four-star review, so the wall is not made up only of fives.",
-    date: "2026-06-19",
-    methodId: "tape-in",
-    source: "Sample",
-  },
-  {
-    id: "sample-4",
-    author: "Sample review",
-    rating: 5,
-    body: "Placeholder row — replace with a real review mentioning a mini-tip set.",
-    date: "2026-05-30",
-    methodId: "mini-tip",
-    source: "Sample",
-  },
-  {
-    id: "sample-5",
-    author: "Sample review",
-    rating: 5,
-    body: "Placeholder row — replace with a real review. Short one.",
-    date: "2026-05-08",
-    methodId: "micro-rings",
-    source: "Sample",
-  },
-  {
-    id: "sample-6",
-    author: "Sample review",
-    rating: 5,
-    body: "Placeholder row — replace with a real review that does not name a method, to exercise the unfiltered case.",
-    date: "2026-04-21",
+    id: "emily-m",
+    author: "Emily M.",
+    rating: null,
+    body: "Annie's Russian hair is better quality than all the top brands..I know because I've bought it and hers lasts twice as long at least. Quality is amazing and she is a total extensions expert xx",
+    date: "2024-03-23",
     methodId: null,
-    source: "Sample",
+    source: "Instagram message",
+  },
+  {
+    id: "whatsapp-refit",
+    author: null,
+    rating: null,
+    body: "Hey Annie, Just wanted to drop you a message and say thank you so so much for sorting my hair yesterday & for the price you did it at. I absolutely love it (and so does my boyfriend) and i cant believe how natural it looks! I'll see you in 6 weeks for the refit",
+    date: "2024-03-21",
+    methodId: null,
+    source: "WhatsApp message",
+  },
+  {
+    id: "jade",
+    author: "Jade",
+    rating: null,
+    body: "Hair still amazing as ever even after dying it still shiny and smooth I love it",
+    date: "2024-03-21",
+    methodId: null,
+    source: "WhatsApp message",
   },
 ];
 
 /**
- * What reviewers consistently bring up, drawn from the published summaries
- * of the salon's own review profiles. These are themes across many
- * reviews, not quotes from any one person, which is why each carries the
- * platform it was summarised from.
+ * What reviewers consistently bring up. The first three are summarised
+ * from the published review profiles; the fourth is corroborated by the
+ * testimonials above, where two separate clients name the hair itself.
  */
 export const REVIEW_THEMES = [
   {
@@ -114,6 +92,13 @@ export const REVIEW_THEMES = [
     source: RATING.source,
   },
   {
+    id: "russian-hair",
+    label: "The Russian hair",
+    detail:
+      "Clients who have bought hair elsewhere come back to the quality of Annie's, and to how long it lasts against the brands they had been using.",
+    source: "Client messages",
+  },
+  {
     id: "value",
     label: "Price against the city centre",
     detail:
@@ -121,18 +106,11 @@ export const REVIEW_THEMES = [
     source: RATING.source,
   },
   {
-    id: "welcome",
-    label: "The welcome",
+    id: "natural",
+    label: "How natural it looks",
     detail:
-      "The atmosphere comes up as often as the hair does — reviewers describe the studio as warm and unhurried.",
-    source: RATING.source,
-  },
-  {
-    id: "colour-match",
-    label: "Matching the colour",
-    detail:
-      "Annie matching the shade and blend by eye, in person, is called out again and again.",
-    source: RATING.source,
+      "The blend is what clients mention when they first see it — that it does not read as extensions at all.",
+    source: "Client messages",
   },
 ] as const;
 
@@ -143,14 +121,23 @@ export type RatingBreakdown = {
   readonly percent: number;
 };
 
-/** How many of each star rating, highest first, with percentages. */
+/** Only the entries that actually carry a star rating. */
+export function ratedReviews(reviews: readonly Review[]): readonly Review[] {
+  return reviews.filter((r) => r.rating !== null);
+}
+
+/**
+ * How many of each star rating, highest first, with percentages.
+ * Unrated messages are excluded — they are not zero-star reviews.
+ */
 export function ratingBreakdown(
   reviews: readonly Review[],
 ): readonly RatingBreakdown[] {
-  const total = reviews.length;
+  const rated = ratedReviews(reviews);
+  const total = rated.length;
   const stars: (1 | 2 | 3 | 4 | 5)[] = [5, 4, 3, 2, 1];
   return stars.map((s) => {
-    const count = reviews.filter((r) => r.rating === s).length;
+    const count = rated.filter((r) => r.rating === s).length;
     return {
       stars: s,
       count,
@@ -159,15 +146,16 @@ export function ratingBreakdown(
   });
 }
 
-/** Mean rating of a set of reviews, to one decimal place. 0 when empty. */
+/** Mean of the rated entries, to one decimal place. 0 when none. */
 export function averageRating(reviews: readonly Review[]): number {
-  if (reviews.length === 0) return 0;
-  const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-  return Math.round((sum / reviews.length) * 10) / 10;
+  const rated = ratedReviews(reviews);
+  if (rated.length === 0) return 0;
+  const sum = rated.reduce((acc, r) => acc + (r.rating ?? 0), 0);
+  return Math.round((sum / rated.length) * 10) / 10;
 }
 
 export type ReviewFilter = {
-  /** Only reviews at or above this rating. */
+  /** Only reviews at or above this rating. Excludes unrated entries. */
   readonly minRating?: number;
   /** Only reviews naming this method. */
   readonly methodId?: string | null;
@@ -179,7 +167,11 @@ export function filterReviews(
   filter: ReviewFilter = {},
 ): readonly Review[] {
   return reviews
-    .filter((r) => (filter.minRating === undefined ? true : r.rating >= filter.minRating))
+    .filter((r) =>
+      filter.minRating === undefined
+        ? true
+        : r.rating !== null && r.rating >= filter.minRating,
+    )
     .filter((r) =>
       filter.methodId === undefined || filter.methodId === null
         ? true
@@ -192,7 +184,7 @@ export function filterReviews(
     });
 }
 
-/** Method ids that at least one review names, in catalogue order. */
+/** Method ids that at least one review names, in first-seen order. */
 export function reviewedMethodIds(
   reviews: readonly Review[],
 ): readonly string[] {

@@ -13,8 +13,10 @@ system.
 
 ## Before this goes live
 
-Prices are now real. Two things remain, and each is gated behind a flag so
-the site cannot quietly ship a fiction.
+**Nothing is outstanding.** Prices, reviews and photography are all real,
+and each was gated behind a flag while it was not. This section is kept
+as the record of what those flags mean and where the content came from,
+so the next person changing it knows what the rules were.
 
 ### 1. Prices — **done**
 
@@ -49,31 +51,38 @@ neither does the site. If it should, add it to `PRICE_NOTE`.
 its place. Textured hair now routes to the LA Weave in the match finder,
 which genuinely suits it.
 
-### 2. Reviews — `src/lib/annie-reviews.ts`
+### 2. Reviews — **done**
 
-The **4.9 from 82 reviews** aggregate is real and sourced from the salon's
-public Treatwell profile; it links out to it everywhere it appears. The four
-review *themes* are summarised from the published profiles, and each one
-names the platform it came from.
+`REVIEWS_VERIFIED` is `true`. Three real client messages, quoted verbatim,
+supplied by the client:
 
-The individual cards on the review wall are **placeholders, written to read
-obviously as placeholders**. No invented customer quote appears anywhere.
+| Who | Where from | Published |
+|---|---|---|
+| Emily M. | Instagram message | 23 Mar 2024 |
+| Jade | WhatsApp message | 21 Mar 2024 |
+| *name withheld* | WhatsApp message | 21 Mar 2024 |
 
-To go live:
+Three decisions worth knowing about:
 
-1. Export the real reviews from Treatwell, Fresha or Google.
-2. Replace `REVIEWS` with them, keeping the `Review` shape.
-3. Set `REVIEWS_VERIFIED = true`.
+- **`rating` is nullable.** These are messages, not platform reviews, and
+  none carried a star rating. The type used to require a 1–5, which would
+  have forced an invented five stars onto all three. The wall shows a
+  quote mark instead of stars, and hides the rating breakdown and the
+  rating filter entirely rather than rendering empty ones.
+- **Names are reduced** to a first name, or a first name and initial —
+  the convention review platforms use, and the least exposure consistent
+  with the quote meaning anything. One screenshot carried no name, so
+  that card says so. A test enforces the format.
+- **They stay out of the JSON-LD.** Self-published testimonials without
+  ratings do not earn a rich result and do invite a manual penalty. The
+  Treatwell aggregate does that job.
 
-The amber "sample layout" banner disappears on its own, and `review` nodes
-start being emitted into the JSON-LD. Until then they are deliberately
-withheld — marking up placeholder reviews for Google is both dishonest and a
-manual penalty waiting to happen.
+The **4.9 from 82** headline is unchanged: real, third-party, and linked.
 
 ### 3. Photography — `src/lib/annie-photos.ts`
 
-**20 of 26 slots are filled** with Annie's own photographs, supplied by the
-client from her Instagram and prepared for the web here. Six remain as briefs.
+**Every slot is filled** with Annie's own photographs, supplied by the
+client from her Instagram and prepared for the web here. 
 
 Every image position is a named slot. A slot with an entry in `PHOTOS`
 renders the photograph; a slot without one renders a `PhotoFrame` — a gold
@@ -96,13 +105,32 @@ cp annie-portrait.jpg public/annie/
 The frame keeps its ratio so the page does not move, the brief disappears,
 and the gallery's counter goes up.
 
-#### Still wanted
+#### The six slots that were never going to be filled
 
-| Slot | Shot |
-|---|---|
-| `detail-bond` | A bond at the root, close enough to show the scale |
-| `detail-colour-match` | A shade held against the client's own ends in daylight |
-| `method-*` (5) | One per method: the bond itself, not a finished head |
+Five `method-*` slots wanted a macro shot of each bond, and
+`detail-bond` wanted the same thing again. The client cannot get them,
+and they are the one thing no photograph of a finished head can show —
+which is rather the point of a good fitting.
+
+So they were **removed and replaced by `<BondViewer>`**: a zoomable,
+drawn illustration of a head that goes from whole head down to a single
+bond at the root, with a different bond per method. It sits in each
+method's section on the services page and once more on the gallery.
+
+It is drawn roughly to scale — the hair mass is 192 units across for a
+head of about 150mm, so a nano ring is drawn at 3 units because a nano
+ring is about 3mm. At 1× it is a speck, which is the honest answer to
+"will anyone see it?". A scale bar inside the SVG reads 47mm at 1× and
+2.6mm at 18×, and it is drawn outside the scaled group so its length is
+fixed and only its label changes.
+
+Two layers cross-fade as you zoom: the painted head fades out and a
+macro view of scalp and individual hairs fades in, because magnifying a
+painted hair mass just gives you a bigger painted hair mass. The viewBox
+never moves — a group is scaled around the bond, so the browser can run
+it on the compositor rather than repainting every frame.
+
+It says "Illustration" on it. It is not presented as a photograph.
 
 There is **no photograph of Annie**, and the client confirmed none exists,
 so the `annie-portrait` slot was removed rather than left as a frame that
@@ -145,20 +173,21 @@ out. Annie's own watermarks were kept.
 | Review wall | `/annie/reviews` | Rating breakdown, filter by stars and by method |
 | Enquiry builder | `/annie/book` | Validates, saves a draft, and composes a finished WhatsApp / SMS / email message |
 | Structured data | everywhere | `HairSalon` with real NAP, hours and services; `FAQPage`; `BreadcrumbList` |
-| Photo manifest | `src/lib/annie-photos.ts` | 26 named slots, 20 filled with Annie's own work; drop a file in and the frame becomes a photograph |
+| Photo manifest | `src/lib/annie-photos.ts` | 20 named slots, all filled with Annie's own work |
+| Bond viewer | `src/components/annie/bond-viewer.tsx` | A head you can zoom into, 1× to 24×, showing each method's bond at the root, roughly to scale |
 | Live motion | `src/components/annie/motion.tsx` | Custom cursor, magnetic CTAs, word reveals, parallax, scroll progress, petals |
 
 ### The logic, and its tests
 
 All the decision-making is pure TypeScript with no React in it, tested with
-`node --test`. **112 tests** cover this site.
+`node --test`. **119 tests** cover this site.
 
 ```
 src/lib/annie-salon.ts       Business facts, opening-hours logic   (17 tests)
 src/lib/annie-methods.ts     The five methods                      —
 src/lib/annie-hair-match.ts  Recommendation scoring                (19 tests)
 src/lib/annie-pricing.ts     Price calculator, from the real list  (23 tests)
-src/lib/annie-reviews.ts     Aggregation and filtering             (20 tests)
+src/lib/annie-reviews.ts     Aggregation and filtering             (27 tests)
 src/lib/annie-booking.ts     Validation and message composition    (33 tests)
 ```
 
@@ -264,7 +293,7 @@ root one.
 
 ```bash
 npm run dev          # http://localhost:3000/annie
-npm run test         # 238 tests, 112 of them this site's
+npm run test         # 245 tests, 119 of them this site's
 npm run typecheck
 npm run build
 npm run build:pages  # static export

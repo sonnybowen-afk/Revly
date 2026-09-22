@@ -42,7 +42,7 @@ export default function ReviewsPage() {
                   out of 5
                 </>
               }
-              lede={`From ${RATING.count} reviews on ${RATING.source}. Four things come up again and again, and the hair lasting is the one people write about most.`}
+              lede={`From ${RATING.count} reviews on ${RATING.source}. Four things come up again and again, and how long the hair lasts is the one people write about most.`}
             />
 
             <Reveal direction="zoom-out" delay={120}>
@@ -88,7 +88,7 @@ export default function ReviewsPage() {
         <AnnieHeading
           label="The themes"
           title="What comes up again and again"
-          lede="Summarised across the studio's public review profiles, rather than picked out one flattering quote at a time."
+          lede="Drawn from the studio's public review profiles and from the messages clients have sent — not picked out one flattering quote at a time."
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {REVIEW_THEMES.map((theme, i) => (
@@ -112,9 +112,9 @@ export default function ReviewsPage() {
 
       <AnnieSection>
         <AnnieHeading
-          label="The wall"
-          title="Reviews in full"
-          lede="Filter by rating or by the method that was fitted."
+          label="In their own words"
+          title="Messages clients have sent"
+          lede="Quoted word for word from WhatsApp and Instagram, and published by the salon to its own Instagram story."
         />
         <Reveal delay={120}>
           <div className="mt-12">

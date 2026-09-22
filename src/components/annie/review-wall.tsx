@@ -1,15 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AlertTriangle, Star } from "lucide-react";
+import { Quote, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { methodById } from "@/lib/annie-methods";
 import type { Review } from "@/lib/annie-reviews";
 import {
   REVIEWS,
-  REVIEWS_VERIFIED,
   averageRating,
   filterReviews,
+  ratedReviews,
   ratingBreakdown,
   reviewedMethodIds,
 } from "@/lib/annie-reviews";
@@ -62,29 +62,16 @@ export function ReviewWall() {
     [minRating, methodId],
   );
 
+  const rated = ratedReviews(REVIEWS);
   const breakdown = ratingBreakdown(REVIEWS);
   const wallAverage = averageRating(REVIEWS);
+  // These testimonials are messages, not rated reviews. A star breakdown
+  // of nothing, and filters with no chips, are worse than their absence.
+  const hasRatings = rated.length > 0;
+  const hasMethods = methodIds.length > 0;
 
   return (
     <div>
-      {/* The honest banner. It is the first thing in the component, not a
-          footnote, and it disappears on its own once REVIEWS_VERIFIED
-          says the wall holds imported reviews. */}
-      {!REVIEWS_VERIFIED ? (
-        <p className="mb-8 flex items-start gap-3 rounded-xl border border-warning/40 bg-warning-soft p-4 text-sm leading-relaxed text-warning-soft-foreground">
-          <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          <span>
-            <strong className="font-semibold">Sample layout.</strong> The cards
-            below are placeholders showing how the wall lays out — they are
-            not customer reviews. The{" "}
-            <span className="font-technical">{RATING.value}</span> rating from{" "}
-            <span className="font-technical">{RATING.count}</span> reviews
-            above is real and links to {RATING.source}. Import the real
-            reviews to replace these.
-          </span>
-        </p>
-      ) : null}
-
       <div className="grid gap-10 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <aside className="space-y-8">
           <div className="annie-card p-6">
@@ -112,70 +99,90 @@ export function ReviewWall() {
             </p>
           </div>
 
-          <div>
-            <p className="annie-label">This wall</p>
-            <ul className="mt-4 space-y-2">
-              {breakdown.map((row) => (
-                <li key={row.stars} className="flex items-center gap-3 text-sm">
-                  <span className="font-technical w-6 shrink-0 tabular-nums text-muted-foreground">
-                    {row.stars}
-                    <span className="sr-only"> star</span>
-                  </span>
-                  <span
-                    className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted"
-                    role="img"
-                    aria-label={`${row.count} at ${row.stars} stars, ${row.percent} percent`}
-                  >
+          {hasRatings ? (
+            <div>
+              <p className="annie-label">This wall</p>
+              <ul className="mt-4 space-y-2">
+                {breakdown.map((row) => (
+                  <li key={row.stars} className="flex items-center gap-3 text-sm">
+                    <span className="font-technical w-6 shrink-0 tabular-nums text-muted-foreground">
+                      {row.stars}
+                      <span className="sr-only"> star</span>
+                    </span>
                     <span
-                      className="block h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
-                      style={{ width: `${row.percent}%` }}
-                    />
-                  </span>
-                  <span className="font-technical w-6 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                    {row.count}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-muted-foreground">
-              {REVIEWS.length} shown, averaging{" "}
-              <span className="font-technical">{wallAverage}</span>.
-            </p>
-          </div>
-
-          <fieldset>
-            <legend className="annie-label mb-3">Filter</legend>
-            <div className="flex flex-wrap gap-2">
-              <Chip
-                selected={minRating === 0 && methodId === null}
-                onClick={() => {
-                  setMinRating(0);
-                  setMethodId(null);
-                }}
-              >
-                Everything
-              </Chip>
-              <Chip
-                selected={minRating === 5}
-                onClick={() => setMinRating(minRating === 5 ? 0 : 5)}
-              >
-                5 stars only
-              </Chip>
-              {methodIds.map((id) => {
-                const method = methodById(id);
-                if (!method) return null;
-                return (
-                  <Chip
-                    key={id}
-                    selected={methodId === id}
-                    onClick={() => setMethodId(methodId === id ? null : id)}
-                  >
-                    {method.name}
-                  </Chip>
-                );
-              })}
+                      className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted"
+                      role="img"
+                      aria-label={`${row.count} at ${row.stars} stars, ${row.percent} percent`}
+                    >
+                      <span
+                        className="block h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+                        style={{ width: `${row.percent}%` }}
+                      />
+                    </span>
+                    <span className="font-technical w-6 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                      {row.count}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-muted-foreground">
+                {rated.length} rated, averaging{" "}
+                <span className="font-technical">{wallAverage}</span>.
+              </p>
             </div>
-          </fieldset>
+          ) : (
+            <div className="rounded-xl border border-border bg-background-subtle p-5">
+              <p className="annie-label">About these</p>
+              <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                Messages clients sent Annie directly, by WhatsApp and
+                Instagram, and which she published to her own Instagram
+                story. Quoted word for word. They carry no star rating,
+                because a message is not a rated review &mdash; the{" "}
+                <span className="font-technical text-foreground">
+                  {RATING.value}
+                </span>{" "}
+                above is the rated one, and it is on {RATING.source}.
+              </p>
+            </div>
+          )}
+
+          {hasRatings || hasMethods ? (
+            <fieldset>
+              <legend className="annie-label mb-3">Filter</legend>
+              <div className="flex flex-wrap gap-2">
+                <Chip
+                  selected={minRating === 0 && methodId === null}
+                  onClick={() => {
+                    setMinRating(0);
+                    setMethodId(null);
+                  }}
+                >
+                  Everything
+                </Chip>
+                {hasRatings ? (
+                  <Chip
+                    selected={minRating === 5}
+                    onClick={() => setMinRating(minRating === 5 ? 0 : 5)}
+                  >
+                    5 stars only
+                  </Chip>
+                ) : null}
+                {methodIds.map((id) => {
+                  const method = methodById(id);
+                  if (!method) return null;
+                  return (
+                    <Chip
+                      key={id}
+                      selected={methodId === id}
+                      onClick={() => setMethodId(methodId === id ? null : id)}
+                    >
+                      {method.name}
+                    </Chip>
+                  );
+                })}
+              </div>
+            </fieldset>
+          ) : null}
         </aside>
 
         <div>
@@ -207,14 +214,22 @@ function ReviewCard({ review }: { review: Review }) {
   return (
     <li className="annie-card annie-lift p-6">
       <div className="flex items-center justify-between gap-3">
-        <Stars rating={review.rating} />
+        {/* Stars only where the source actually carried a rating. A
+            message gets a quote mark instead of five invented stars. */}
+        {review.rating !== null ? (
+          <Stars rating={review.rating} />
+        ) : (
+          <Quote aria-hidden="true" className="size-5 text-primary/70" />
+        )}
         <span className="annie-label text-[0.55rem]">{review.source}</span>
       </div>
-      <blockquote className="mt-4 text-[0.95rem] leading-relaxed text-foreground">
-        {review.body}
+      <blockquote className="mt-4 text-[1.0625rem] leading-relaxed text-foreground">
+        &ldquo;{review.body}&rdquo;
       </blockquote>
       <footer className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border pt-4 text-xs text-muted-foreground">
-        <cite className="not-italic">{review.author}</cite>
+        <cite className="not-italic">
+          {review.author ?? "Client, name withheld"}
+        </cite>
         <span aria-hidden="true">·</span>
         <time dateTime={review.date} className="font-technical">
           {new Date(`${review.date}T00:00:00Z`).toLocaleDateString("en-GB", {
