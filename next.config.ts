@@ -17,8 +17,17 @@ const rawBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/Revly";
 const basePath =
   rawBasePath === "/" ? "" : rawBasePath.replace(/\/$/, "");
 
+/**
+ * Next prefixes basePath onto its own assets and onto next/link hrefs,
+ * but NOT onto a hand-written `src` on a plain <img>. Publishing the
+ * effective prefix lets `assetPath()` do that job — see src/lib/asset.ts.
+ * Empty outside a Pages build, because basePath only applies there.
+ */
+const assetBase = isPagesBuild ? basePath : "";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  env: { NEXT_PUBLIC_ASSET_BASE: assetBase },
   ...(isPagesBuild
     ? {
         output: "export" as const,

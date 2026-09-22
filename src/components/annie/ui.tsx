@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
+import { assetPath } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 import type { PhotoId } from "@/lib/annie-photos";
 import { brief, photo } from "@/lib/annie-photos";
@@ -228,7 +229,7 @@ export function PhotoFrame({
             export runs without the image optimiser, so a plain <img> with an
             explicit aspect-ratio is the honest choice here. */}
         <img
-          src={resolvedSrc}
+          src={assetPath(resolvedSrc)}
           alt={resolvedAlt}
           style={{ aspectRatio: ratio }}
           loading="lazy"
