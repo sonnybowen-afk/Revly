@@ -19,6 +19,15 @@ repetition** — rather than around content volume.
 | Pricing | `/pricing` | Shopfront only — no payments wired |
 | NEA & coursework | `/nea` | Complete |
 
+## Also in this repository
+
+**[Annie's Secret Hair Extension](README-annie.md)** — a second, separate
+site served from `/annie`, for a hair extension studio in Manchester. It
+shares this app's build and deploy pipeline but has its own root chrome,
+palette, typography and motion. See [README-annie.md](README-annie.md) for
+what still needs Annie's real prices, reviews and photographs before it
+goes live.
+
 ## Getting started
 
 ```bash
