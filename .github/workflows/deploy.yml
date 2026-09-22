@@ -6,7 +6,7 @@ on:
       - main
       # Deploys straight from the working branch too, so the site can go
       # live before the branch is merged. Drop this line once it is.
-      - claude/install-ui-ux-pro-max-skill-k136h6
+      - claude/annie-secret-hair-website-4uoq38
   workflow_dispatch:
 
 permissions:
