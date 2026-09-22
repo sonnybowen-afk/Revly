@@ -1,0 +1,640 @@
+@import "tailwindcss";
+
+/*
+  Annie's Secret Hair Extension
+  ─────────────────────────────
+  One site, one brand, so the tokens sit on :root rather than being
+  scoped to a wrapper. `.annie-root` is still set on <html> by the root
+  layout, because the salon block below and a good deal of the component
+  CSS keys off it.
+*/
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-playfair), ui-serif, Georgia, "Times New Roman",
+    serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur-base: 200ms;
+  --dur-slow: 340ms;
+
+  --radius-card: 0.5rem;
+  --radius-control: 0.375rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-foreground: var(--primary-soft-foreground);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-foreground: var(--accent-soft-foreground);
+  --color-study: var(--primary);
+  --color-study-soft: var(--primary-soft);
+  --color-study-soft-foreground: var(--primary-soft-foreground);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-soft-foreground: var(--success-soft-foreground);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-soft-foreground: var(--warning-soft-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-soft-foreground: var(--destructive-soft-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-rule: var(--rule);
+  --color-ring: var(--ring);
+  --color-chart-bar: var(--chart-bar);
+  --color-chart-bar-quiet: var(--chart-bar-quiet);
+  --color-chart-grid: var(--chart-grid);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Display type is the serif. Tight, dark, confident — the hierarchy
+     comes from the typeface change, not from piling on weight. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .container-page {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 78rem;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .container-page { padding-inline: 2rem; }
+  }
+  @media (min-width: 1280px) {
+    .container-page { padding-inline: 3rem; }
+  }
+
+  /* Flat surface with a hairline. No shadow — see the note at the top. */
+  .card-surface {
+    background-color: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-card);
+  }
+
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ANNIE'S SECRET — salon site theme (/annie)
+   ───────────────────────────────────────────────────────────────────
+   A second brand living in the same app. It re-points the same semantic
+   tokens Revly uses, so every `bg-background` / `text-muted-foreground`
+   utility keeps working and simply comes out in the salon's colours.
+
+   Direction : Classic salon. Warm ivory, antique gold, blush pink.
+   Light, generous and unhurried — the register of a good salon, not of
+   a nightclub.
+
+     Warm ivory (#FFFBF7) not white — plain white under gold goes grey
+       and clinical. A cream ground makes the gold read as metal.
+     Ink is deep cocoa-plum (#3A2B2E), never black. It carries 13:1 on
+       the canvas while staying soft enough to read as warm.
+     ONE gold, at a value dark enough to be TEXT (#856610). Bright gold
+       on cream is unreadable, so bright gold appears only inside the
+       gilt gradient on large display type, never as small text.
+     Blush is the second voice: soft fills, petals and glow. Never a
+       control, and never load-bearing.
+     Depth is light, not shadow. Cream bands, hairlines and a blush
+       bloom, with shadows kept wide and barely there.
+
+   Contrast, measured and checked pair by pair:
+     ink #3A2B2E on ivory           13.03:1
+     muted #7B6569 on ivory          5.22:1   on cream band  4.92:1
+     gold #856610 on ivory           5.20:1   on gold wash   4.76:1
+     ivory on a gold button          5.22:1
+     border-strong on ivory          3.48:1   (non-text, needs 3)
+   Every pair clears its WCAG threshold, so nothing here relies on
+   the reader having good eyes and a good screen.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* `:has()` lets the salon theme reach <html>, so the browser chrome and
+   the overscroll gutter are cream too — not just the content box. */
+:root:has(.annie-root),
+.annie-root {
+  --background: #fffbf7;
+  --background-subtle: #fdf3ec;
+  --foreground: #3a2b2e;
+
+  --card: #ffffff;
+  --card-foreground: #3a2b2e;
+  --card-border: #f0dfd2;
+
+  --muted: #f8ede5;
+  --muted-foreground: #7b6569;
+
+  /* Gold is the brand, at a value that can legally carry text. */
+  --primary: #856610;
+  --primary-hover: #6e5409;
+  --on-primary: #fffbf7;
+  --primary-soft: #fbf0dc;
+  --primary-soft-foreground: #6b5310;
+
+  /* Blush — a surface tint and a gradient partner, never a control. */
+  --accent: #e8a0b4;
+  --accent-soft: #fdeef2;
+  --accent-soft-foreground: #8c3f55;
+
+  --success: #1f6a4c;
+  --success-soft: #e9f4ee;
+  --success-soft-foreground: #175139;
+
+  --warning: #7a5a0d;
+  --warning-soft: #fbf0dc;
+  --warning-soft-foreground: #6b5310;
+
+  --destructive: #9a2f3f;
+  --destructive-soft: #fcecef;
+  --destructive-soft-foreground: #7c2533;
+
+  --border: #f0dfd2;
+  --border-strong: #a3806a;
+  --rule: #856610;
+  --ring: #856610;
+
+  --chart-bar: #b8901f;
+  --chart-bar-quiet: #f0e2c4;
+  --chart-grid: #f0dfd2;
+
+  /* Wide and faint. On a light ground a tight shadow reads as dirt. */
+  --shadow-overlay: 0 30px 80px -40px rgba(122, 90, 70, 0.35);
+
+  color-scheme: light;
+}
+
+.annie-root {
+  /* The salon's own type stack, set on the wrapper by app/annie/layout.tsx. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-playfair), ui-serif, Georgia, "Times New Roman",
+    serif;
+  --font-technical: var(--font-jetbrains), ui-monospace, "SFMono-Regular",
+    Menlo, monospace;
+
+  /* Decorative golds and blushes. These are for fills, edges and glow —
+     never for text, which uses --primary above. */
+  --gold-bright: #c9a227;
+  --gold-pale: #e8cf8a;
+  --blush: #e8a0b4;
+  --blush-pale: #f7d6de;
+  --gold-hairline: rgba(133, 102, 16, 0.22);
+  --gold-glow: rgba(201, 162, 39, 0.16);
+  --rose-glow: rgba(232, 160, 180, 0.2);
+
+  /* The house gradient, for large display type and gilt edges. Kept in
+     the mid-to-deep golds so it stays legible against cream. */
+  --gilt: linear-gradient(
+    100deg,
+    #9a7418 0%,
+    #c9a227 20%,
+    #8a6a12 42%,
+    #c98fa4 62%,
+    #b8901f 82%,
+    #8a6a12 100%
+  );
+
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Playfair carries its own optical weight; it does not need the tight
+   tracking the Revly serif wants. */
+.annie-root :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+@layer utilities {
+  /* ── Type ─────────────────────────────────────────────────────── */
+  .font-technical {
+    font-family: var(--font-technical);
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Small-caps technical label. The site's connective tissue. */
+  .annie-label {
+    font-family: var(--font-technical);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+
+  /* The gilt gradient across display type. Falls back to solid gold
+     where background-clip: text is unsupported. */
+  .text-gilt {
+    color: var(--primary);
+    background-image: var(--gilt);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .text-gilt {
+      color: transparent;
+    }
+  }
+
+  /* ── Surfaces ─────────────────────────────────────────────────── */
+  .annie-card {
+    position: relative;
+    background-color: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 18px 44px -32px rgba(122, 90, 70, 0.3);
+  }
+  /* A gilt filament along the top edge — the house detail. */
+  .annie-card::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--gold-hairline) 18%,
+      rgba(201, 162, 39, 0.85) 50%,
+      var(--gold-hairline) 82%,
+      transparent
+    );
+  }
+
+  /* A full gilt gradient border, for the pieces that should feel set
+     rather than merely outlined. */
+  .annie-gilt-edge {
+    position: relative;
+    border-radius: 1.25rem;
+  }
+  .annie-gilt-edge::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gilt);
+    opacity: 0.6;
+    /* Punches the middle out so only the 1px ring paints. */
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .annie-glass {
+    background-color: color-mix(in srgb, var(--background) 82%, transparent);
+    backdrop-filter: blur(18px) saturate(1.25);
+    -webkit-backdrop-filter: blur(18px) saturate(1.25);
+    border: 1px solid var(--card-border);
+  }
+
+  .annie-hairline {
+    border-top: 1px solid var(--gold-hairline);
+  }
+
+  /* A light sweeping across a surface. */
+  .annie-sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.5) 45%,
+      rgba(201, 162, 39, 0.16) 50%,
+      transparent 68%
+    );
+    background-size: 280% 100%;
+    animation: annie-sheen 9s ease-in-out infinite;
+  }
+
+  /* Soft off-screen light sources. Decorative only — always aria-hidden. */
+  .annie-aura {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    pointer-events: none;
+  }
+
+  /* ── Scroll reveal ────────────────────────────────────────────────
+     The element starts transformed and transparent and is released when
+     the observer in <Reveal> sets data-revealed. Only transform, opacity
+     and filter animate, so nothing here ever triggers layout. */
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    transition:
+      opacity 620ms var(--ease-out-soft),
+      transform 620ms var(--ease-out-soft),
+      filter 620ms var(--ease-out-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  [data-reveal="left"] {
+    transform: translate3d(-24px, 0, 0);
+  }
+  [data-reveal="right"] {
+    transform: translate3d(24px, 0, 0);
+  }
+  /* The house move: content arrives by zooming up into place. */
+  [data-reveal="zoom"] {
+    transform: scale(0.88) translate3d(0, 26px, 0);
+    transition-duration: 780ms;
+  }
+  [data-reveal="zoom-soft"] {
+    transform: scale(0.955);
+    transition-duration: 700ms;
+  }
+  /* Rack focus: zooms in from behind a blur, then snaps sharp. */
+  [data-reveal="zoom-blur"] {
+    transform: scale(0.9);
+    filter: blur(14px);
+    transition-duration: 860ms;
+  }
+  /* Pulls back rather than forward. For big statement headings. */
+  [data-reveal="zoom-out"] {
+    transform: scale(1.14);
+    transition-duration: 900ms;
+  }
+  [data-reveal][data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    will-change: auto;
+  }
+
+  /* ── Live motion ──────────────────────────────────────────────────
+     Ambient animation that never stops, so the page is alive rather
+     than merely animated-once-on-scroll. All transform and opacity. */
+  .annie-float {
+    animation: annie-float 14s ease-in-out infinite;
+  }
+  .annie-drift {
+    animation: annie-drift 22s ease-in-out infinite alternate;
+  }
+  .annie-marquee {
+    animation: annie-marquee 42s linear infinite;
+  }
+  .annie-shimmer {
+    background-size: 240% 100%;
+    animation: annie-shimmer 7s ease-in-out infinite;
+  }
+  /* A petal falling and turning. Each one is given its own duration,
+     delay and drift inline, so no two share a path. */
+  .annie-petal {
+    animation: annie-petal var(--petal-duration, 18s) linear infinite;
+    animation-delay: var(--petal-delay, 0s);
+  }
+  /* A slow gold pulse, for the "open now" dot and live indicators. */
+  .annie-pulse {
+    animation: annie-pulse 2.6s ease-in-out infinite;
+  }
+  /* A ring that expands and fades out from under a dot. */
+  .annie-ping {
+    animation: annie-ping 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  /* Draws the hero's hair-strand paths on once, then leaves them. */
+  .annie-draw {
+    stroke-dasharray: var(--dash, 1200);
+    stroke-dashoffset: var(--dash, 1200);
+    animation: annie-draw 2.6s var(--ease-out-soft) forwards;
+    animation-delay: var(--draw-delay, 0ms);
+  }
+  /* The hero settles out of an over-scale on load. */
+  .annie-hero-zoom {
+    animation: annie-hero-zoom 1800ms var(--ease-out-soft) both;
+  }
+  /* Slow continuous push on a still image, so a photo is never static. */
+  .annie-kenburns {
+    animation: annie-kenburns 26s ease-in-out infinite alternate;
+  }
+  /* A hairline that keeps drawing itself across, left to right. */
+  .annie-trace {
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--gold-bright),
+      transparent
+    );
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    animation: annie-trace 7s ease-in-out infinite;
+  }
+
+  /* Hides the native cursor for the custom one. Applied from
+     <CustomCursor> after it mounts, never from here — if the script
+     never runs, the visitor keeps an ordinary cursor rather than none.
+     Text fields are exempt: a dot cannot place an insertion point. */
+  .annie-cursor-none,
+  .annie-cursor-none a,
+  .annie-cursor-none button,
+  .annie-cursor-none summary,
+  .annie-cursor-none [role="button"] {
+    cursor: none;
+  }
+
+  /* Zoom on hover, clipped by the parent. The element's own footprint
+     never changes, so nothing around it reflows. */
+  .annie-zoom-frame {
+    overflow: hidden;
+  }
+  .annie-zoom-target {
+    transition: transform 720ms var(--ease-out-soft);
+  }
+  @media (hover: hover) {
+    .annie-zoom-frame:hover .annie-zoom-target,
+    .annie-zoom-frame:focus-within .annie-zoom-target {
+      transform: scale(1.07);
+    }
+  }
+
+  /* Lifts and swells a card towards the pointer. */
+  .annie-lift {
+    transition:
+      transform 360ms var(--ease-out-soft),
+      border-color 360ms var(--ease-out-soft),
+      box-shadow 360ms var(--ease-out-soft);
+  }
+  @media (hover: hover) {
+    .annie-lift:hover {
+      transform: translate3d(0, -6px, 0) scale(1.018);
+      border-color: rgba(201, 162, 39, 0.6);
+      box-shadow: 0 32px 64px -34px rgba(122, 90, 70, 0.45);
+    }
+  }
+}
+
+@keyframes annie-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -26px, 0); }
+}
+@keyframes annie-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(40px, -30px, 0) scale(1.15); }
+}
+@keyframes annie-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes annie-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes annie-sheen {
+  0%, 100% { background-position: 180% 50%; }
+  55% { background-position: -80% 50%; }
+}
+@keyframes annie-trace {
+  0%, 100% { background-position: -60% 0; }
+  50% { background-position: 160% 0; }
+}
+@keyframes annie-petal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -10%, 0) rotate(0deg);
+  }
+  12% { opacity: var(--petal-opacity, 0.5); }
+  88% { opacity: var(--petal-opacity, 0.5); }
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(var(--petal-drift, 40px), 110vh, 0)
+      rotate(var(--petal-spin, 220deg));
+  }
+}
+@keyframes annie-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@keyframes annie-ping {
+  0% { transform: scale(1); opacity: 0.55; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes annie-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes annie-hero-zoom {
+  from { opacity: 0; transform: scale(1.12); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes annie-kenburns {
+  from { transform: scale(1); }
+  to { transform: scale(1.09); }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────
+   Everything decorative stops. Revealed content is shown outright rather
+   than left at opacity 0, which is the failure mode that makes a page
+   unreadable rather than merely still. */
+@media (prefers-reduced-motion: reduce) {
+  .annie-root [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .annie-root :is(
+      .annie-float,
+      .annie-drift,
+      .annie-marquee,
+      .annie-shimmer,
+      .annie-draw,
+      .annie-hero-zoom,
+      .annie-kenburns,
+      .annie-petal,
+      .annie-pulse,
+      .annie-ping,
+      .annie-trace
+    ),
+  .annie-root .annie-sheen::after {
+    animation: none;
+  }
+  .annie-root .annie-draw {
+    stroke-dashoffset: 0;
+  }
+  /* Petals exist only to move. With motion off they are just clutter. */
+  .annie-root .annie-petal {
+    display: none;
+  }
+  .annie-root .annie-lift:hover,
+  .annie-root .annie-zoom-frame:hover .annie-zoom-target {
+    transform: none;
+  }
+}
